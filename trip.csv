@@ -1,70 +1,91 @@
 Latitude,Longitude,Lieu,Jours sur place,Lien image Wikimedia
-11.307,-74.204,Parc National Tayrona Colombie,4,https://upload.wikimedia.org/wikipedia/commons/5/5f/Guatemala_City_skyline.jpg
-10.393,-75.514,Parc Tayrona Cabo San Juan,2,https://upload.wikimedia.org/wikipedia/commons/8/8a/El_Tunco_Beach.jpg
-6.244,-75.581,Guatapé & Piedra del Peñol Colombie,3,https://upload.wikimedia.org/wikipedia/commons/3/3b/Golfo_de_Fonseca_map.png
-1.248,-77.326,Santuario de Las Lajas Colombie,2,https://upload.wikimedia.org/wikipedia/commons/6/6d/Leon_Nicaragua_Cathedral.jpg
-0.044,-77.345,Amazonie Colombienne Leticia,4,https://upload.wikimedia.org/wikipedia/commons/4/49/San_Juan_del_Sur_Bay.jpg
--0.678,-80.093,Isla de la Plata Équateur,3,https://upload.wikimedia.org/wikipedia/commons/b/b4/Tamarindo_Beach_Costa_Rica.jpg
--4.2032, -69.9350, Leticia Amazonie (axe urbain + port), 4-0.678,-80.093,Isla de la Plata Équateur,3,https://upload.wikimedia.org/wikipedia/commons/b/b4/Tamarindo_Beach_Costa_Rica.jpg
--0.953,-90.965,Îles Galápagos (Santa Cruz),6,https://upload.wikimedia.org/wikipedia/commons/7/7c/Manuel_Antonio_National_Park.jpg
--1.406,-78.425,Volcan Chimborazo Équateur,2,https://upload.wikimedia.org/wikipedia/commons/1/1a/Panama_City_skyline.jpg
--3.067,-60.025,Amazonie Brésil (Manaus),5,https://upload.wikimedia.org/wikipedia/commons/6/6a/Cartagena_de_Indias_old_city.jpg
--4.092,-63.127,Parc Jaú Amazonie Brésil,4,https://upload.wikimedia.org/wikipedia/commons/2/2f/Santa_Marta_Colombia.jpg
--12.046,-77.042,Lima côte Pacifique falaises,2,https://upload.wikimedia.org/wikipedia/commons/1/1a/Tayrona_National_Park.jpg
--9.189,-75.015,Cordillère Blanche Pérou,5,https://upload.wikimedia.org/wikipedia/commons/0/0c/Villa_de_Leyva_Plaza_Mayor.jpg
--13.163,-72.545,Machu Picchu Pérou,4,https://upload.wikimedia.org/wikipedia/commons/5/5c/Barichara_Colombia.jpg
--13.329,-72.197,Vallée Sacrée des Incas,4,https://upload.wikimedia.org/wikipedia/commons/8/89/Tatacoa_Desert.jpg
--15.84,-70.021,Lac Titicaca Pérou/Bolivie,4,https://upload.wikimedia.org/wikipedia/commons/7/7f/Coffee_region_Colombia.jpg
--16.166,-69.083,Île du Soleil Bolivie,3,https://upload.wikimedia.org/wikipedia/commons/4/4b/Medellin_skyline.jpg
--20.133,-67.489,Salar de Uyuni Bolivie,4,https://upload.wikimedia.org/wikipedia/commons/7/7b/Bogota_skyline.jpg
--21.946,-68.23,Lagunes Altiplano Bolivie,3,https://upload.wikimedia.org/wikipedia/commons/6/6d/Quito_old_town.jpg
--23.652,-67.99,Désert d’Atacama Chili,5,https://upload.wikimedia.org/wikipedia/commons/5/5c/Otavalo_Market.jpg
--26.246,-69.197,Parc Nevado Tres Cruces Chili,3,https://upload.wikimedia.org/wikipedia/commons/4/4c/Quilotoa_Lagoon.jpg
--32.653,-70.011,Aconcagua Parc Argentine,4,https://upload.wikimedia.org/wikipedia/commons/1/1c/Cotopaxi_volcano.jpg
--41.133,-71.31,Bariloche & lacs Argentine,5,https://upload.wikimedia.org/wikipedia/commons/3/3f/Cuenca_Ecuador.jpg
--42.88,-71.326,Parc Los Alerces Argentine,3,https://upload.wikimedia.org/wikipedia/commons/9/9a/Lima_skyline.jpg
--49.331,-72.886,Parc Torres del Paine Chili,6,https://upload.wikimedia.org/wikipedia/commons/6/6f/Paracas_National_Reserve.jpg
--50.942,-73.406,Glacier Perito Moreno Argentine,3,https://upload.wikimedia.org/wikipedia/commons/4/4a/Arequipa_city.jpg
--54.801,-68.303,Ushuaïa Terre de Feu,4,https://upload.wikimedia.org/wikipedia/commons/2/2f/Colca_Canyon.jpg
--25.695,-54.436,Chutes d’Iguazú,3,https://upload.wikimedia.org/wikipedia/commons/6/6f/Cusco_Plaza_de_Armas.jpg
--27.126,-55.537,Missions Jésuites Argentine,2,https://upload.wikimedia.org/wikipedia/commons/e/eb/Machu_Picchu_Peru.jpg
--22.951,-43.21,Rio de Janeiro panoramas,4,https://upload.wikimedia.org/wikipedia/commons/3/3e/Cordillera_Blanca.jpg
--24.02,-46.462,Ilha do Cardoso Brésil,3,https://upload.wikimedia.org/wikipedia/commons/0/0f/Huayhuash_mountains.jpg
--27.599,-48.549,Florianópolis plages sauvages,4,https://upload.wikimedia.org/wikipedia/commons/4/4c/Lake_Titicaca.jpg
--15.6,-56.1,Chapada dos Guimarães,3,https://upload.wikimedia.org/wikipedia/commons/5/5f/La_Paz_city.jpg
--10.292,-48.333,Chapada dos Veadeiros,4,https://upload.wikimedia.org/wikipedia/commons/3/3c/Sucre_Bolivia.jpg
-2.155,-59.414,Guyane française forêt primaire,5,https://upload.wikimedia.org/wikipedia/commons/4/4e/Salar_de_Uyuni_Bolivia.jpg
-4.04,-52.683,Fleuve Oyapock,3,https://upload.wikimedia.org/wikipedia/commons/8/8d/Laguna_Colorada_Bolivia.jpg
-5.16,-52.64,Îles du Salut,2,https://upload.wikimedia.org/wikipedia/commons/2/2e/San_Pedro_de_Atacama.jpg
--8.34,115.092,Bali volcans & rizières,6,https://upload.wikimedia.org/wikipedia/commons/0/0f/Valparaiso_colorful_houses.jpg
--8.409,115.188,Lombok Mont Rinjani,4,https://upload.wikimedia.org/wikipedia/commons/1/1e/Santiago_skyline.jpg
--8.561,119.484,Flores & Komodo,5,https://upload.wikimedia.org/wikipedia/commons/6/6c/Coyhaique_Chile.jpg
--5.58,105.25,Krakatoa (vue volcanique),2,https://upload.wikimedia.org/wikipedia/commons/5/5f/Punta_Arenas_city.jpg
-0.789,113.921,Bornéo Kalimantan jungle,6,https://upload.wikimedia.org/wikipedia/commons/6/6c/Ushuaia_city.jpg
-4.21,118.616,Sabah Bornéo montagnes,4,https://upload.wikimedia.org/wikipedia/commons/3/3b/Perito_Moreno_Glacier.jpg
-6.035,116.558,Mont Kinabalu Malaisie,4,https://upload.wikimedia.org/wikipedia/commons/2/2b/Fitz_Roy_Chalten.jpg
--4.011,122.519,Wakatobi récifs Indonésie,4,https://upload.wikimedia.org/wikipedia/commons/4/4f/Buenos_Aires_skyline.jpg
--2.877,132.296,Raja Ampat Papouasie,6,https://upload.wikimedia.org/wikipedia/commons/9/93/Rio_de_Janeiro_Corcovado.jpg
--10.171,123.597,Île de Rote Indonésie,3,https://upload.wikimedia.org/wikipedia/commons/4/4b/Salvador_Pelourinho.jpg
--33.868,151.209,Sydney falaises & océan,3,https://upload.wikimedia.org/wikipedia/commons/3/3a/Fortaleza_beach.jpg
--36.89,148.262,Parc Kosciuszko Australie,4,https://upload.wikimedia.org/wikipedia/commons/6/6b/Belem_Brazil.jpg
--16.918,145.778,Daintree Rainforest,4,https://upload.wikimedia.org/wikipedia/commons/6/6b/Belem_Brazil.jpg
--18.287,147.699,Great Barrier Reef îles,5,
--25.344,131.036,Uluru Australie,3,
--42.882,147.325,Tasmanie sauvage,6,
-30.997,103.672,Mont Qingcheng Chine,3,
-29.57,100.316,Région du Tibet Est,6,
-27.988,86.925,Himalaya Népal (Everest View),5,
-41.204,74.766,Tian Shan Kirghizistan,6,
-42.491,78.395,Lac Issyk-Kul,4,
-38.576,68.779,Pamir Tadjikistan,5,
-39.654,66.959,Samarkand Ouzbékistan,3,
-37.96,58.326,Désert du Karakoum,3,
-38.963,35.243,Cappadoce Turquie,4,
-41.008,28.978,Bosphore panoramas Istanbul,2,
-43.075,25.617,Montagnes Balkans,4,
-46.852,23.591,Monts Apuseni Roumanie,4,
-49.82,20.04,Tatras Pologne/Slovaquie,4,
-50.064,19.945,Cracovie & environs,3,
-52.229,21.012,Varsovie fin du voyage,2,
-
+11.307,-74.204,Parc National Tayrona Colombie,4
+10.393,-75.514,Parc Tayrona Cabo San Juan,2
+10.423,-75.551,Cartagena de Indias Colombie,3
+6.244,-75.581,Guatapé & Piedra del Peñol Colombie,3
+6.251,-75.564,Medellín Colombie,2
+1.248,-77.326,Santuario de Las Lajas Colombie,2
+-0.220,-78.512,Quito centre historique Équateur,2
+-1.406,-78.425,Volcan Chimborazo Équateur,2
+-0.678,-80.093,Isla de la Plata Équateur,3
+-0.953,-90.965,Îles Galápagos Santa Cruz,6
+0.044,-77.345,Amazonie Colombienne Leticia,4
+-3.067,-60.025,Amazonie Brésil Manaus,5
+-4.092,-63.127,Parc Jaú Amazonie Brésil,4
+-12.046,-77.042,Lima côte Pacifique falaises,2
+-9.189,-75.015,Cordillère Blanche Pérou,5
+-14.087,-75.763,Huacachina désert d’Ica,2
+-13.329,-72.197,Vallée Sacrée des Incas,4
+-13.163,-72.545,Machu Picchu Pérou,4
+-15.840,-70.021,Lac Titicaca Pérou Bolivie,4
+-16.166,-69.083,Île du Soleil Bolivie,3
+-16.489,-68.119,La Paz Bolivie,2
+-20.133,-67.489,Salar de Uyuni Bolivie,4
+-21.946,-68.230,Lagunes Altiplano Bolivie,3
+-23.652,-67.990,Désert d’Atacama Chili,5
+-26.246,-69.197,Parc Nevado Tres Cruces Chili,3
+-32.653,-70.011,Aconcagua Parc Argentine,4
+-32.890,-68.827,Mendoza vignobles Argentine,2
+-27.126,-55.537,Missions Jésuites Argentine,2
+-25.695,-54.436,Chutes d’Iguazú,3
+-23.550,-46.633,São Paulo Brésil,3
+-22.951,-43.210,Rio de Janeiro panoramas,5
+-24.020,-46.462,Ilha do Cardoso Brésil,3
+-27.599,-48.549,Florianópolis plages sauvages,4
+-34.603,-58.381,Buenos Aires Argentine,3
+-41.133,-71.310,Bariloche & lacs Argentine,5
+-42.880,-71.326,Parc Los Alerces Argentine,3
+-49.331,-72.886,Parc Torres del Paine Chili,6
+-50.942,-73.406,Glacier Perito Moreno Argentine,3
+-49.272,-72.985,El Chaltén Fitz Roy Argentine,3
+-54.801,-68.303,Ushuaïa Terre de Feu,4
+-5.580,105.250,Krakatoa Indonésie,2
+-8.340,115.092,Bali volcans & rizières,6
+-8.409,115.188,Lombok Mont Rinjani,4
+-8.561,119.484,Flores & Komodo,5
+-4.011,122.519,Wakatobi récifs Indonésie,4
+-10.171,123.597,Île de Rote Indonésie,3
+-2.877,132.296,Raja Ampat Papouasie,6
+0.789,113.921,Bornéo Kalimantan jungle,6
+4.210,118.616,Sabah Bornéo montagnes,4
+6.035,116.558,Mont Kinabalu Malaisie,4
+4.048,114.805,Mulu Caves National Park Malaisie,3
+-16.918,145.778,Daintree Rainforest Australie,4
+-18.287,147.699,Great Barrier Reef îles,5
+-20.282,148.699,Whitsundays Australie,2
+-25.344,131.036,Uluru Australie,3
+-33.868,151.209,Sydney falaises & océan,3
+-36.890,148.262,Parc Kosciuszko Australie,4
+-42.882,147.325,Tasmanie sauvage,6
+-36.848,174.763,Auckland Nouvelle-Zélande,2
+-38.685,176.070,Rotorua volcans Nouvelle-Zélande,3
+-39.272,175.580,Parc Tongariro Nouvelle-Zélande,3
+-43.532,172.636,Christchurch Nouvelle-Zélande,2
+-44.673,167.925,Milford Sound Nouvelle-Zélande,3
+-45.031,168.662,Queenstown Nouvelle-Zélande,4
+43.825,87.616,Urumqi Xinjiang Chine,2
+42.950,89.189,Turpan désert & oasis Chine,2
+40.142,94.661,Dunhuang grottes de Mogao Chine,3
+37.872,112.549,Pingyao ville ancienne Chine,2
+34.385,109.273,Xi’an armée de terre cuite Chine,3
+36.061,103.834,Lanzhou Fleuve Jaune Chine,2
+31.230,121.473,Shanghai mégapole Chine,3
+29.563,106.551,Chongqing montagnes urbaines Chine,2
+30.658,104.064,Chengdu pandas & Sichuan,3
+30.997,103.672,Mont Qingcheng Chine,3
+28.178,102.259,Région du Yunnan Nord (Shangri-La),4
+25.038,102.718,Kunming Yunnan Chine,2
+27.988,86.925,Himalaya Népal Everest View,5
+28.209,83.985,Pokhara Népal,2
+41.204,74.766,Tian Shan Kirghizistan,6
+42.491,78.395,Lac Issyk-Kul Kirghizistan,4
+38.576,68.779,Pamir Tadjikistan,5
+39.654,66.959,Samarkand Ouzbékistan,3
+37.960,58.326,Désert du Karakoum Turkménistan,3
+38.963,35.243,Cappadoce Turquie,4
+41.008,28.978,Bosphore panoramas Istanbul,2
+43.075,25.617,Montagnes Balkans,4
+46.852,23.591,Monts Apuseni Roumanie,4
+49.820,20.040,Tatras Pologne Slovaquie,4
+50.064,19.945,Cracovie & environs,3
+52.229,21.012,Varsovie fin du voyage,2
