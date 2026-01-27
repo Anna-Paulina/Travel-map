@@ -1,10 +1,9 @@
 Latitude,Longitude,Lieu,Jours sur place,Lien image Wikimedia
-11.307,-74.204,Parc National Tayrona Colombie,4,https://upload.wikimedia.org/wikipedia/commons/5/5f/Guatemala_City_skyline.jpg
-10.393,-75.514,Parc Tayrona Cabo San Juan,2,https://upload.wikimedia.org/wikipedia/commons/8/8a/El_Tunco_Beach.jpg
-6.244,-75.581,Guatapé & Piedra del Peñol Colombie,3,https://upload.wikimedia.org/wikipedia/commons/3/3b/Golfo_de_Fonseca_map.png
-1.248,-77.326,Santuario de Las Lajas Colombie,2,https://upload.wikimedia.org/wikipedia/commons/6/6d/Leon_Nicaragua_Cathedral.jpg
-0.044,-77.345,Amazonie Colombienne Leticia,4,https://upload.wikimedia.org/wikipedia/commons/4/49/San_Juan_del_Sur_Bay.jpg
--0.678,-80.093,Isla de la Plata Équateur,3,https://upload.wikimedia.org/wikipedia/commons/b/b4/Tamarindo_Beach_Costa_Rica.jpg
+11.3086, -74.1846, Parc National Tayrona (accès routier principal), 4
+11.3171, -74.2103, Cabo San Juan (parking / départ sentier), 2
+6.2448, -75.5856, Guatapé & Piedra del Peñol (route Medellín), 3
+1.2495, -77.3279, Sanctuaire de Las Lajas (route Ipiales), 2
+-4.2032, -69.9350, Leticia Amazonie (axe urbain + port), 4-0.678,-80.093,Isla de la Plata Équateur,3,https://upload.wikimedia.org/wikipedia/commons/b/b4/Tamarindo_Beach_Costa_Rica.jpg
 -0.953,-90.965,Îles Galápagos (Santa Cruz),6,https://upload.wikimedia.org/wikipedia/commons/7/7c/Manuel_Antonio_National_Park.jpg
 -1.406,-78.425,Volcan Chimborazo Équateur,2,https://upload.wikimedia.org/wikipedia/commons/1/1a/Panama_City_skyline.jpg
 -3.067,-60.025,Amazonie Brésil (Manaus),5,https://upload.wikimedia.org/wikipedia/commons/6/6a/Cartagena_de_Indias_old_city.jpg
