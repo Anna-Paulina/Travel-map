@@ -1,15 +1,12 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Travel Map</title>
 
-<!-- Leaflet -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-
-<!-- Routing -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css">
 
 <style>
 body {
@@ -21,23 +18,18 @@ body {
 }
 .popup-img {
   width: 100%;
-  border-radius: 8px;
   margin-top: 6px;
+  border-radius: 8px;
 }
 </style>
 
-<!-- PapaParse -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
-
-<!-- Leaflet -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-<!-- Routing -->
 <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
 </head>
 
 <body>
-<h3 style="padding:8px">🌍 Travel route</h3>
+<h3 style="padding:8px">🌍 Travel Route</h3>
 <div id="map"></div>
 
 <script>
@@ -47,19 +39,19 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution: "© OpenStreetMap"
 }).addTo(map);
 
-// =======================
+// ========================
 // LOAD CSV FROM GITHUB
-// =======================
+// ========================
 Papa.parse("trip.csv", {
   download: true,
   header: true,
   skipEmptyLines: true,
-  complete: function (results) {
+  complete: function(results) {
 
     const points = [];
     const bounds = [];
 
-    results.data.forEach(row => {
+    results.data.forEach((row, idx) => {
       const lat = parseFloat(row.Latitude);
       const lng = parseFloat(row.Longitude);
       const name = row.Lieu;
@@ -67,14 +59,15 @@ Papa.parse("trip.csv", {
 
       if (isNaN(lat) || isNaN(lng)) return;
 
-      const placeQuery = encodeURIComponent(name);
-      const imageUrl = `https://source.unsplash.com/400x300/?${placeQuery}`;
+      const query = encodeURIComponent(name);
+      const imgUrl =
+        `https://source.unsplash.com/featured/400x300/?${query}&sig=${idx}`;
 
       const marker = L.marker([lat, lng]).addTo(map);
       marker.bindPopup(`
         <strong>${name}</strong><br>
         ⏱ ${days} day(s)<br>
-        <img class="popup-img" src="${imageUrl}">
+        <img class="popup-img" src="${imgUrl}">
       `);
 
       const ll = L.latLng(lat, lng);
@@ -83,14 +76,14 @@ Papa.parse("trip.csv", {
     });
 
     if (bounds.length) map.fitBounds(bounds);
-    drawSegments(points);
+    drawRouteSegments(points);
   }
 });
 
-// =======================
-// ROUTING SEGMENTS
-// =======================
-function drawSegments(points) {
+// ========================
+// ROUTING SEGMENT BY SEGMENT
+// ========================
+function drawRouteSegments(points) {
   let i = 0;
 
   function next() {
@@ -106,50 +99,54 @@ function drawSegments(points) {
       }),
       addWaypoints: false,
       draggableWaypoints: false,
-      show: false,
       fitSelectedRoutes: false,
-      createMarker: () => null,
-      lineOptions: {
-        styles: [{ color: "#1e88e5", weight: 5 }]
-      }
+      show: false,
+      createMarker: () => null
     })
     .on("routesfound", e => {
-      const leg = e.routes[0].legs[0];
-      const line = e.routes[0].coordinates.map(c => [c.lat, c.lng]);
+      const route = e.routes[0];
+      const leg = route.legs[0];
 
-      const poly = L.polyline(line, { color: "#1e88e5", weight: 5 }).addTo(map);
-      poly.on("click", ev => {
+      const coords = route.coordinates.map(c => [c.lat, c.lng]);
+      const polyline = L.polyline(coords, {
+        color: "#1e88e5",
+        weight: 5
+      }).addTo(map);
+
+      polyline.on("click", ev => {
         L.popup()
           .setLatLng(ev.latlng)
           .setContent(`
             🚗 <strong>Segment ${i+1}</strong><br>
-            Distance: ${(leg.distance/1000).toFixed(1)} km<br>
-            Duration: ${(leg.time/3600).toFixed(1)} h
+            Distance: ${(leg.distance / 1000).toFixed(1)} km<br>
+            Duration: ${(leg.time / 3600).toFixed(1)} h
           `)
           .openOn(map);
       });
 
-      i++; setTimeout(next, 600);
+      i++;
+      setTimeout(next, 600);
     })
     .on("routingerror", () => {
-      const poly = L.polyline([from, to], {
+      const line = L.polyline([from, to], {
         color: "#e53935",
-        dashArray: "6,6",
-        weight: 4
+        weight: 4,
+        dashArray: "6,6"
       }).addTo(map);
 
-      const km = from.distanceTo(to)/1000;
-      poly.on("click", ev => {
+      const km = from.distanceTo(to) / 1000;
+      line.on("click", ev => {
         L.popup()
           .setLatLng(ev.latlng)
           .setContent(`
-            ⚠️ No road<br>
+            ⚠️ No road available<br>
             Distance (air): ${km.toFixed(1)} km
           `)
           .openOn(map);
       });
 
-      i++; setTimeout(next, 600);
+      i++;
+      setTimeout(next, 600);
     });
   }
 
