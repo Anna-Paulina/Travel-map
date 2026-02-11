@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Travel Map</title>
+<title>Travel Map - Debug</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css">
 <style>
@@ -14,6 +14,21 @@ body {
 #map {
   height: 90vh;
 }
+#debug {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(0,0,0,0.8);
+  color: #0f0;
+  padding: 10px;
+  border-radius: 8px;
+  max-width: 300px;
+  max-height: 200px;
+  overflow-y: auto;
+  font-family: monospace;
+  font-size: 11px;
+  z-index: 10000;
+}
 .popup-img {
   width: 100%;
   max-width: 300px;
@@ -22,9 +37,10 @@ body {
   border-radius: 8px;
   object-fit: cover;
   background: #f0f0f0;
+  display: block;
 }
 .popup-content {
-  min-width: 200px;
+  min-width: 250px;
 }
 .loading-img {
   width: 100%;
@@ -35,10 +51,24 @@ body {
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
   background-size: 200% 100%;
   animation: loading 1.5s infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
 }
 @keyframes loading {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
+}
+.error-msg {
+  color: #e53935;
+  font-size: 11px;
+  margin-top: 4px;
+}
+.success-msg {
+  color: #4caf50;
+  font-size: 11px;
+  margin-top: 4px;
 }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
@@ -46,80 +76,116 @@ body {
 <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
 </head>
 <body>
-<h3 style="padding:8px">🌍 Travel Route</h3>
+<h3 style="padding:8px">🌍 Travel Route - Debug Mode</h3>
 <div id="map"></div>
+<div id="debug">Debug Console...</div>
+
 <script>
+// ========================
+// DEBUG CONSOLE
+// ========================
+const debugConsole = document.getElementById('debug');
+function log(msg, type = 'info') {
+  const timestamp = new Date().toLocaleTimeString();
+  const color = type === 'error' ? '#f44' : type === 'success' ? '#4f4' : '#0ff';
+  debugConsole.innerHTML += `<div style="color:${color}">[${timestamp}] ${msg}</div>`;
+  debugConsole.scrollTop = debugConsole.scrollHeight;
+  console.log(`[${type}]`, msg);
+}
+
 const map = L.map("map").setView([15, -90], 5);
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution: "© OpenStreetMap"
 }).addTo(map);
 
+log('Map initialized');
+
 // ========================
-// WIKIMEDIA COMMONS IMAGE FUNCTION
+// MULTIPLE IMAGE SOURCES
 // ========================
-async function getPlaceImage(placeName) {
+async function getPlaceImage(placeName, lat, lng) {
+  log(`Fetching image for: ${placeName}`);
+  
+  // Strategy 1: Pexels API (Free, no auth needed for basic use)
   try {
-    // Try to get image from Wikimedia Commons via Wikipedia
-    const searchUrl = `https://en.wikipedia.org/w/api.php?` +
-      `action=query&format=json&origin=*&` +
-      `prop=pageimages|images&piprop=original&` +
-      `titles=${encodeURIComponent(placeName)}&` +
-      `imlimit=1`;
+    log('Trying Pexels API...');
+    const response = await fetch(
+      `https://api.pexels.com/v1/search?query=${encodeURIComponent(placeName)}&per_page=1`,
+      {
+        headers: {
+          'Authorization': '563492ad6f91700001000001c94d75a29fb84d9f89031b9d89e4cf3d'
+        }
+      }
+    );
     
-    const response = await fetch(searchUrl);
+    if (response.ok) {
+      const data = await response.json();
+      log(`Pexels response: ${data.photos ? data.photos.length : 0} photos`);
+      if (data.photos && data.photos.length > 0) {
+        const url = data.photos[0].src.medium;
+        log(`✓ Pexels image found: ${url.substring(0, 50)}...`, 'success');
+        return { url, source: 'Pexels' };
+      }
+    } else {
+      log(`Pexels failed: ${response.status}`, 'error');
+    }
+  } catch (error) {
+    log(`Pexels error: ${error.message}`, 'error');
+  }
+  
+  // Strategy 2: Wikipedia/Wikimedia
+  try {
+    log('Trying Wikimedia...');
+    const wikiUrl = `https://en.wikipedia.org/w/api.php?` +
+      `action=query&format=json&origin=*&` +
+      `prop=pageimages&piprop=original&` +
+      `titles=${encodeURIComponent(placeName)}`;
+    
+    const response = await fetch(wikiUrl);
     const data = await response.json();
     
     if (data.query && data.query.pages) {
       const pages = Object.values(data.query.pages);
       if (pages[0] && pages[0].original) {
-        return pages[0].original.source;
-      }
-      
-      // If no main image, try to get first image from page
-      if (pages[0] && pages[0].images && pages[0].images.length > 0) {
-        const imageTitle = pages[0].images[0].title;
-        const imageUrl = await getWikimediaImageUrl(imageTitle);
-        if (imageUrl) return imageUrl;
+        const url = pages[0].original.source;
+        log(`✓ Wikimedia image found: ${url.substring(0, 50)}...`, 'success');
+        return { url, source: 'Wikimedia' };
       }
     }
+    log('No Wikimedia image found');
   } catch (error) {
-    console.warn('Wikimedia fetch failed:', error);
+    log(`Wikimedia error: ${error.message}`, 'error');
   }
   
-  // Fallback: Try Flickr-style search or use a map thumbnail
-  return `https://maps.geoapify.com/v1/staticmap?style=osm-bright&width=400&height=300&center=lonlat:0,0&zoom=14&apiKey=demo`;
-}
-
-async function getWikimediaImageUrl(imageTitle) {
+  // Strategy 3: OpenStreetMap Static Map
   try {
-    const url = `https://en.wikipedia.org/w/api.php?` +
-      `action=query&format=json&origin=*&` +
-      `prop=imageinfo&iiprop=url&` +
-      `titles=${encodeURIComponent(imageTitle)}`;
-    
-    const response = await fetch(url);
-    const data = await response.json();
-    
-    if (data.query && data.query.pages) {
-      const pages = Object.values(data.query.pages);
-      if (pages[0] && pages[0].imageinfo && pages[0].imageinfo[0]) {
-        return pages[0].imageinfo[0].url;
-      }
-    }
+    log('Using OSM static map as fallback');
+    const url = `https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${lng}&zoom=13&size=400x300&markers=${lat},${lng},red-pushpin`;
+    log(`✓ OSM map generated`, 'success');
+    return { url, source: 'OSM Map' };
   } catch (error) {
-    console.warn('Image info fetch failed:', error);
+    log(`OSM error: ${error.message}`, 'error');
   }
-  return null;
+  
+  // Strategy 4: Simple colored placeholder
+  const colors = ['FF6B6B', '4ECDC4', '45B7D1', 'FFA07A', '98D8C8'];
+  const color = colors[Math.floor(Math.random() * colors.length)];
+  const url = `https://via.placeholder.com/400x300/${color}/FFFFFF?text=${encodeURIComponent(placeName)}`;
+  log(`Using placeholder with color ${color}`, 'info');
+  return { url, source: 'Placeholder' };
 }
 
 // ========================
 // LOAD CSV
 // ========================
+log('Loading CSV file...');
+
 Papa.parse("trip.csv", {
   download: true,
   header: true,
   skipEmptyLines: true,
   complete: function(results) {
+    log(`CSV loaded: ${results.data.length} rows`, 'success');
     const points = [];
     const bounds = [];
     
@@ -129,7 +195,12 @@ Papa.parse("trip.csv", {
       const name = row.Lieu || row.Place || "Unknown";
       const days = row["Jours sur place"] || row.Days || "N/A";
       
-      if (isNaN(lat) || isNaN(lng)) return;
+      if (isNaN(lat) || isNaN(lng)) {
+        log(`Skipping invalid row: ${name}`, 'error');
+        return;
+      }
+      
+      log(`Adding marker: ${name} (${lat}, ${lng})`);
       
       const marker = L.marker([lat, lng]).addTo(map);
       
@@ -137,8 +208,8 @@ Papa.parse("trip.csv", {
       const popupContent = `
         <div class="popup-content">
           <strong>${name}</strong><br>
-          ⏱ ${days} day(s)<br>
-          <div class="loading-img"></div>
+          ⏱ ${days} jour(s)<br>
+          <div class="loading-img">Chargement...</div>
         </div>
       `;
       
@@ -146,17 +217,39 @@ Papa.parse("trip.csv", {
       
       // Load image when popup is opened
       marker.on('popupopen', async function(e) {
+        log(`Popup opened for: ${name}`);
         const popup = e.popup;
-        const imgUrl = await getPlaceImage(name);
         
-        popup.setContent(`
-          <div class="popup-content">
-            <strong>${name}</strong><br>
-            ⏱ ${days} day(s)<br>
-            <img class="popup-img" src="${imgUrl}" alt="${name}" 
-                 onerror="this.style.display='none'">
-          </div>
-        `);
+        try {
+          const imageData = await getPlaceImage(name, lat, lng);
+          
+          log(`Setting image in popup: ${imageData.source}`);
+          
+          popup.setContent(`
+            <div class="popup-content">
+              <strong>${name}</strong><br>
+              ⏱ ${days} jour(s)<br>
+              <img class="popup-img" 
+                   src="${imageData.url}" 
+                   alt="${name}"
+                   onload="console.log('✓ Image loaded successfully')"
+                   onerror="console.error('✗ Image load failed'); this.style.display='none'; this.nextElementSibling.style.display='block'">
+              <div class="error-msg" style="display:none">Image failed to load</div>
+              <div class="success-msg">Source: ${imageData.source}</div>
+            </div>
+          `);
+          
+          log(`✓ Popup content updated`, 'success');
+        } catch (error) {
+          log(`Failed to load image: ${error.message}`, 'error');
+          popup.setContent(`
+            <div class="popup-content">
+              <strong>${name}</strong><br>
+              ⏱ ${days} jour(s)<br>
+              <div class="error-msg">Error: ${error.message}</div>
+            </div>
+          `);
+        }
       });
       
       const ll = L.latLng(lat, lng);
@@ -164,25 +257,37 @@ Papa.parse("trip.csv", {
       bounds.push(ll);
     });
     
-    if (bounds.length) map.fitBounds(bounds);
+    if (bounds.length) {
+      map.fitBounds(bounds);
+      log(`Map fitted to ${bounds.length} points`, 'success');
+    }
     
     if (points.length > 1) {
+      log(`Drawing routes between ${points.length} points`);
       drawRouteSegments(points);
     }
+  },
+  error: function(error) {
+    log(`CSV parse error: ${error.message}`, 'error');
   }
 });
 
 // ========================
-// ROUTING SEGMENT BY SEGMENT
+// ROUTING
 // ========================
 function drawRouteSegments(points) {
   let i = 0;
   
   function next() {
-    if (i >= points.length - 1) return;
+    if (i >= points.length - 1) {
+      log('All routes drawn', 'success');
+      return;
+    }
     
     const from = points[i];
     const to = points[i + 1];
+    
+    log(`Drawing route ${i+1}/${points.length-1}`);
     
     const routing = L.Routing.control({
       waypoints: [from, to],
@@ -201,15 +306,15 @@ function drawRouteSegments(points) {
           weight: 5
         }]
       }
-    }).addTo(map);  // ← THIS WAS MISSING!
+    }).addTo(map);
     
     routing.on("routesfound", e => {
       const route = e.routes[0];
-      const leg = route.coordinates ? route.coordinates : route.waypoints;
       const distance = route.summary ? route.summary.totalDistance : 0;
       const time = route.summary ? route.summary.totalTime : 0;
       
-      // Get the route line that was added
+      log(`✓ Route ${i+1} found: ${(distance/1000).toFixed(1)}km`, 'success');
+      
       const routeLine = routing._line;
       if (routeLine) {
         routeLine.on("click", ev => {
@@ -218,7 +323,7 @@ function drawRouteSegments(points) {
             .setContent(`
               🚗 <strong>Segment ${i+1}</strong><br>
               Distance: ${(distance / 1000).toFixed(1)} km<br>
-              Duration: ${(time / 3600).toFixed(1)} h
+              Durée: ${(time / 3600).toFixed(1)} h
             `)
             .openOn(map);
         });
@@ -229,9 +334,8 @@ function drawRouteSegments(points) {
     });
     
     routing.on("routingerror", (e) => {
-      console.warn('Routing error:', e);
+      log(`Route ${i+1} error, drawing straight line`, 'error');
       
-      // Draw straight line as fallback
       const line = L.polyline([from, to], {
         color: "#e53935",
         weight: 4,
@@ -244,8 +348,8 @@ function drawRouteSegments(points) {
         L.popup()
           .setLatLng(ev.latlng)
           .setContent(`
-            ⚠️ No road available<br>
-            Distance (air): ${km.toFixed(1)} km
+            ⚠️ Pas de route disponible<br>
+            Distance (à vol d'oiseau): ${km.toFixed(1)} km
           `)
           .openOn(map);
       });
@@ -257,6 +361,8 @@ function drawRouteSegments(points) {
   
   next();
 }
+
+log('Script loaded, waiting for CSV...', 'success');
 </script>
 </body>
 </html>
