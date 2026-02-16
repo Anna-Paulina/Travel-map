@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Travel Map</title>
+<title>Travel Map - Test Images</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css">
 <style>
@@ -21,8 +21,9 @@ body {
   margin-top: 6px;
   border-radius: 8px;
   object-fit: cover;
-  background: #f0f0f0;
+  background: #e0e0e0;
   display: block;
+  border: 2px solid #ccc;
 }
 .popup-content {
   min-width: 250px;
@@ -50,7 +51,16 @@ body {
   font-size: 10px;
   color: #888;
   margin-top: 4px;
-  font-style: italic;
+}
+.debug-info {
+  font-size: 10px;
+  color: #666;
+  background: #f5f5f5;
+  padding: 4px;
+  margin-top: 4px;
+  border-radius: 4px;
+  font-family: monospace;
+  word-break: break-all;
 }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
@@ -58,7 +68,7 @@ body {
 <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
 </head>
 <body>
-<h3 style="padding:8px">🌍 Travel Route</h3>
+<h3 style="padding:8px">🌍 Travel Route - Test Images</h3>
 <div id="map"></div>
 
 <script>
@@ -68,88 +78,40 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 }).addTo(map);
 
 // ========================
-// IMAGE SOURCES - TESTED AND WORKING
+// SIMPLE WORKING IMAGE SOURCES
 // ========================
-async function getPlaceImage(placeName, lat, lng, index) {
-  
-  // Strategy 1: Try simplified Wikipedia search (more likely to find)
-  try {
-    // Extract main location name (remove country, details)
-    const simpleName = placeName.split(/\s+(Brésil|Colombie|Colombia|Brazil|Argentina|Pérou|Peru|Chile|Chili)/i)[0].trim();
-    
-    const wikiUrl = `https://en.wikipedia.org/w/api.php?` +
-      `action=query&format=json&origin=*&` +
-      `prop=pageimages&piprop=original&pithumbsize=400&` +
-      `titles=${encodeURIComponent(simpleName)}`;
-    
-    const response = await fetch(wikiUrl);
-    const data = await response.json();
-    
-    if (data.query && data.query.pages) {
-      const pages = Object.values(data.query.pages);
-      if (pages[0] && pages[0].original) {
-        return { 
-          url: pages[0].original.source, 
-          source: 'Wikipedia'
-        };
-      }
-      // Try thumbnail if original not available
-      if (pages[0] && pages[0].thumbnail) {
-        return { 
-          url: pages[0].thumbnail.source, 
-          source: 'Wikipedia'
-        };
-      }
+function getPlaceImage(placeName, lat, lng, index) {
+  // Use multiple simple sources that DEFINITELY work
+  const sources = [
+    {
+      name: 'Picsum (Random Photo)',
+      url: `https://picsum.photos/400/300?random=${index}`,
+      type: 'random'
+    },
+    {
+      name: 'PlaceIMG',
+      url: `https://placeimg.com/400/300/nature?t=${index}`,
+      type: 'random'
+    },
+    {
+      name: 'LoremFlickr',
+      url: `https://loremflickr.com/400/300/landscape,nature?lock=${index}`,
+      type: 'generic'
+    },
+    {
+      name: 'Placeholder',
+      url: `https://via.placeholder.com/400x300/4A90E2/FFFFFF?text=${encodeURIComponent(placeName.substring(0, 20))}`,
+      type: 'placeholder'
+    },
+    {
+      name: 'DummyImage',
+      url: `https://dummyimage.com/400x300/4A90E2/fff&text=${encodeURIComponent(placeName.substring(0, 15))}`,
+      type: 'placeholder'
     }
-  } catch (error) {
-    console.warn('Wikipedia error:', error);
-  }
+  ];
   
-  // Strategy 2: Mapbox Static Map (works great, shows actual location)
-  // Using public demo token - for production, get your own at mapbox.com
-  try {
-    const mapboxToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
-    const url = `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v11/static/${lng},${lat},11,0/400x300@2x?access_token=${mapboxToken}`;
-    
-    return {
-      url: url,
-      source: 'Carte satellite du lieu'
-    };
-  } catch (error) {
-    console.warn('Mapbox error:', error);
-  }
-  
-  // Strategy 3: Geoapify Static Map (free, no key needed for basic use)
-  try {
-    const url = `https://maps.geoapify.com/v1/staticmap?style=osm-bright-smooth&width=400&height=300&center=lonlat:${lng},${lat}&zoom=12&marker=lonlat:${lng},${lat};color:%23ff0000;size:medium&apiKey=demo`;
-    
-    return {
-      url: url,
-      source: 'Carte du lieu'
-    };
-  } catch (error) {
-    console.warn('Geoapify error:', error);
-  }
-  
-  // Strategy 4: Google Street View Static (works without API key for basic use)
-  try {
-    const url = `https://maps.googleapis.com/maps/api/streetview?size=400x300&location=${lat},${lng}&fov=90&heading=0&pitch=0`;
-    
-    return {
-      url: url,
-      source: 'Google Street View'
-    };
-  } catch (error) {
-    console.warn('Street View error:', error);
-  }
-  
-  // Strategy 5: Placekitten as ultimate fallback (always works)
-  const category = index % 3;
-  const categories = ['nature', 'landscape', 'travel'];
-  return {
-    url: `https://loremflickr.com/400/300/${categories[category]},${encodeURIComponent(placeName.split(' ')[0])}?random=${index}`,
-    source: 'Image de voyage générique'
-  };
+  // Return first option (we'll cycle through in error handler)
+  return sources;
 }
 
 // ========================
@@ -178,7 +140,7 @@ Papa.parse("trip.csv", {
         <div class="popup-content">
           <strong>${name}</strong><br>
           ⏱ ${days} jour(s)<br>
-          <div class="loading-img">📸 Chargement de l'image...</div>
+          <div class="loading-img">📸 Chargement...</div>
         </div>
       `;
       
@@ -187,14 +149,31 @@ Papa.parse("trip.csv", {
       });
       
       // Load image when popup is opened
-      marker.on('popupopen', async function(e) {
+      marker.on('popupopen', function(e) {
         const popup = e.popup;
+        const sources = getPlaceImage(name, lat, lng, idx);
+        let currentSourceIndex = 0;
         
-        try {
-          const imageData = await getPlaceImage(name, lat, lng, idx);
+        function tryNextSource() {
+          if (currentSourceIndex >= sources.length) {
+            // All sources failed - show error
+            popup.setContent(`
+              <div class="popup-content">
+                <strong>${name}</strong><br>
+                ⏱ ${days} jour(s)<br>
+                <div style="padding:20px;background:#fee;color:#c33;border-radius:8px;margin-top:8px;">
+                  ❌ Toutes les sources d'images ont échoué
+                </div>
+              </div>
+            `);
+            return;
+          }
           
-          // Create a unique ID for this image
-          const imgId = `img-${idx}-${Date.now()}`;
+          const source = sources[currentSourceIndex];
+          console.log(`Trying source ${currentSourceIndex + 1}/${sources.length}: ${source.name}`);
+          console.log(`URL: ${source.url}`);
+          
+          const imgId = `img-${idx}-${currentSourceIndex}`;
           
           popup.setContent(`
             <div class="popup-content">
@@ -202,39 +181,62 @@ Papa.parse("trip.csv", {
               ⏱ ${days} jour(s)<br>
               <img id="${imgId}" 
                    class="popup-img" 
-                   src="${imageData.url}" 
-                   alt="${name}">
-              <div class="img-source">${imageData.source}</div>
+                   src="${source.url}" 
+                   alt="${name}"
+                   crossorigin="anonymous">
+              <div class="img-source">
+                Source ${currentSourceIndex + 1}/${sources.length}: ${source.name}
+              </div>
+              <div class="debug-info">
+                URL: ${source.url.substring(0, 60)}...
+              </div>
             </div>
           `);
           
-          // Add load/error handlers after image is in DOM
+          // Wait for image to be in DOM
           setTimeout(() => {
             const img = document.getElementById(imgId);
-            if (img) {
-              img.onload = function() {
-                console.log('✓ Image loaded:', name);
-              };
-              img.onerror = function() {
-                console.error('✗ Image failed:', imageData.url);
-                this.style.display = 'none';
-                this.insertAdjacentHTML('afterend', 
-                  '<div style="color:#e53935;font-size:12px;margin-top:8px">Image non disponible</div>'
-                );
-              };
+            if (!img) {
+              console.error('Image element not found in DOM');
+              currentSourceIndex++;
+              tryNextSource();
+              return;
             }
+            
+            img.onload = function() {
+              console.log(`✓ SUCCESS! Image loaded from: ${source.name}`);
+              // Update popup to remove debug info on success
+              popup.setContent(`
+                <div class="popup-content">
+                  <strong>${name}</strong><br>
+                  ⏱ ${days} jour(s)<br>
+                  <img class="popup-img" 
+                       src="${source.url}" 
+                       alt="${name}">
+                  <div class="img-source">✓ ${source.name}</div>
+                </div>
+              `);
+            };
+            
+            img.onerror = function() {
+              console.error(`✗ FAILED: ${source.name} - ${source.url}`);
+              currentSourceIndex++;
+              setTimeout(tryNextSource, 500);
+            };
+            
+            // Timeout fallback
+            setTimeout(() => {
+              if (!img.complete || img.naturalWidth === 0) {
+                console.warn(`Timeout on ${source.name}`);
+                currentSourceIndex++;
+                tryNextSource();
+              }
+            }, 5000);
+            
           }, 100);
-          
-        } catch (error) {
-          console.error('Error loading image:', error);
-          popup.setContent(`
-            <div class="popup-content">
-              <strong>${name}</strong><br>
-              ⏱ ${days} jour(s)<br>
-              <div style="color:#e53935;margin-top:8px;">Erreur de chargement d'image</div>
-            </div>
-          `);
         }
+        
+        tryNextSource();
       });
       
       const ll = L.latLng(lat, lng);
