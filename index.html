@@ -48,7 +48,11 @@ body {
 .img-credit {
   font-size: 10px;
   color: #666;
-  margin-top: 2px;
+  margin-top: 4px;
+}
+.img-credit a {
+  color: #1976d2;
+  text-decoration: none;
 }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
@@ -70,53 +74,54 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 }).addTo(map);
 
 // ========================
-// IMAGE FETCH FUNCTION - CORRIGÉ
+// IMAGE FETCH FUNCTION
 // ========================
-async function getPlaceImage(placeName, lat, lng) {
+async function getPlaceImage(placeName, lat, lng, index) {
   console.log(`🔍 Searching image for: ${placeName}`);
   
   // Nettoyer le nom pour une meilleure recherche
   const cleanName = placeName
-    .replace(/\s+(Brésil|Brazil|Colombie|Colombia|Argentina|Argentine|Pérou|Peru|Chile|Chili|Bolivie|Bolivia)/gi, '')
+    .replace(/\s+(Brésil|Brazil|Colombie|Colombia|Argentina|Argentine|Pérou|Peru|Chile|Chili|Bolivie|Bolivia|Tadjikistan|Tajikistan)/gi, '')
     .trim();
   
-  // Strategy 1: Unsplash avec ta vraie clé
+  console.log(`   Cleaned name: ${cleanName}`);
+  
+  // Strategy 1: Unsplash
   try {
-    console.log('Trying Unsplash...');
+    console.log('   Trying Unsplash...');
     const response = await fetch(
       `https://api.unsplash.com/search/photos?query=${encodeURIComponent(cleanName)}&per_page=1&orientation=landscape`,
       {
         headers: {
-          'Authorization': `Client-ID ${jULX67Eqogco0XFz1B9aMycHG0mKue8yVMzMFJs4eY}`
+          'Authorization': `Client-ID ${UNSPLASH_ACCESS_KEY}`
         }
       }
     );
     
+    console.log(`   Unsplash status: ${response.status}`);
+    
     if (response.ok) {
       const data = await response.json();
-      console.log('Unsplash response:', data);
+      console.log(`   Unsplash results: ${data.results ? data.results.length : 0}`);
       
       if (data.results && data.results.length > 0) {
         const photo = data.results[0];
-        console.log('✓ Unsplash image found!');
+        console.log('   ✓ Unsplash image found!');
         return {
           url: photo.urls.regular,
           credit: `Photo by ${photo.user.name} on Unsplash`,
-          creditUrl: photo.links.html
+          creditUrl: photo.links.html,
+          source: 'Unsplash'
         };
-      } else {
-        console.log('No Unsplash results for:', cleanName);
       }
-    } else {
-      console.error('Unsplash error:', response.status, response.statusText);
     }
   } catch (error) {
-    console.error('Unsplash fetch failed:', error);
+    console.error('   Unsplash error:', error.message);
   }
   
   // Strategy 2: Wikimedia Commons
   try {
-    console.log('Trying Wikimedia...');
+    console.log('   Trying Wikimedia...');
     const searchUrl = `https://en.wikipedia.org/w/api.php?` +
       `action=query&format=json&origin=*&` +
       `prop=pageimages&piprop=original&` +
@@ -128,25 +133,28 @@ async function getPlaceImage(placeName, lat, lng) {
     if (data.query && data.query.pages) {
       const pages = Object.values(data.query.pages);
       if (pages[0] && pages[0].original) {
-        console.log('✓ Wikimedia image found!');
+        console.log('   ✓ Wikimedia image found!');
         return {
           url: pages[0].original.source,
           credit: 'Wikimedia Commons',
-          creditUrl: null
+          creditUrl: null,
+          source: 'Wikipedia'
         };
       }
     }
-    console.log('No Wikimedia image found');
+    console.log('   No Wikimedia image');
   } catch (error) {
-    console.error('Wikimedia fetch failed:', error);
+    console.error('   Wikimedia error:', error.message);
   }
   
-  // Strategy 3: Carte satellite avec Mapbox (toujours fonctionne)
-  console.log('Using Mapbox satellite fallback');
+  // Strategy 3: LoremFlickr (toujours fonctionne, vraies photos)
+  console.log('   Using LoremFlickr...');
+  const keywords = cleanName.split(' ').slice(0, 2).join(',');
   return {
-    url: `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v11/static/${lng},${lat},11,0/400x300@2x?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw`,
-    credit: 'Satellite Map',
-    creditUrl: null
+    url: `https://loremflickr.com/400/300/${keywords}?lock=${index}`,
+    credit: 'LoremFlickr',
+    creditUrl: null,
+    source: 'LoremFlickr'
   };
 }
 
@@ -158,7 +166,7 @@ Papa.parse("trip.csv", {
   header: true,
   skipEmptyLines: true,
   complete: function(results) {
-    console.log(`CSV loaded: ${results.data.length} locations`);
+    console.log(`📄 CSV loaded: ${results.data.length} locations`);
     const points = [];
     const bounds = [];
     
@@ -169,18 +177,18 @@ Papa.parse("trip.csv", {
       const days = row["Jours sur place"] || row.Days || "N/A";
       
       if (isNaN(lat) || isNaN(lng)) {
-        console.warn(`Invalid coordinates for: ${name}`);
+        console.warn(`⚠️ Invalid coordinates for: ${name}`);
         return;
       }
       
-      console.log(`Adding marker: ${name}`);
+      console.log(`📍 Adding marker ${idx + 1}: ${name}`);
       const marker = L.marker([lat, lng]).addTo(map);
       
       const popupContent = `
         <div class="popup-content">
           <strong>${name}</strong><br>
           ⏱ ${days} jour(s)<br>
-          <div class="loading-img">Chargement...</div>
+          <div class="loading-img">🔍 Recherche...</div>
         </div>
       `;
       
@@ -188,37 +196,69 @@ Papa.parse("trip.csv", {
       
       // Load image when popup is opened
       marker.on('popupopen', async function(e) {
-        console.log(`Popup opened for: ${name}`);
+        console.log(`\n👆 Popup opened for: ${name}`);
         const popup = e.popup;
         
         try {
-          const imageData = await getPlaceImage(name, lat, lng);
+          const imageData = await getPlaceImage(name, lat, lng, idx);
+          
+          console.log(`   Selected source: ${imageData.source}`);
+          console.log(`   Image URL: ${imageData.url}`);
           
           const creditHtml = imageData.creditUrl 
             ? `<a href="${imageData.creditUrl}" target="_blank" class="img-credit">${imageData.credit}</a>`
             : `<div class="img-credit">${imageData.credit}</div>`;
           
+          const imgId = `img-${idx}`;
+          
           popup.setContent(`
             <div class="popup-content">
               <strong>${name}</strong><br>
               ⏱ ${days} jour(s)<br>
-              <img class="popup-img" 
+              <img id="${imgId}" 
+                   class="popup-img" 
                    src="${imageData.url}" 
-                   alt="${name}"
-                   onload="console.log('✓ Image loaded successfully')"
-                   onerror="console.error('✗ Image failed to load'); this.src='https://via.placeholder.com/400x300/1976D2/FFFFFF?text=${encodeURIComponent(name.substring(0,20))}'">
+                   alt="${name}">
               ${creditHtml}
             </div>
           `);
           
+          // Ajouter les handlers après que l'image soit dans le DOM
+          setTimeout(() => {
+            const img = document.getElementById(imgId);
+            if (img) {
+              img.onload = function() {
+                console.log(`   ✅ Image loaded successfully from ${imageData.source}`);
+              };
+              img.onerror = function() {
+                console.error(`   ❌ Image failed to load from ${imageData.source}`);
+                console.error(`   Failed URL: ${this.src}`);
+                // Dernier fallback absolu
+                this.style.display = 'none';
+                this.insertAdjacentHTML('afterend', 
+                  `<div style="width:300px;height:200px;background:#e3f2fd;display:flex;align-items:center;justify-content:center;border-radius:8px;color:#1976d2;text-align:center;padding:20px;margin-top:6px;">
+                    <div>
+                      <div style="font-size:40px;margin-bottom:10px;">📍</div>
+                      <div style="font-weight:bold;">${name}</div>
+                      <div style="font-size:12px;margin-top:8px;color:#666;">${lat.toFixed(4)}, ${lng.toFixed(4)}</div>
+                    </div>
+                  </div>`
+                );
+              };
+            }
+          }, 100);
+          
         } catch (error) {
-          console.error('Error loading image:', error);
+          console.error('❌ Error in getPlaceImage:', error);
           popup.setContent(`
             <div class="popup-content">
               <strong>${name}</strong><br>
               ⏱ ${days} jour(s)<br>
-              <div style="padding:16px;background:#fee;color:#c33;border-radius:8px;margin-top:8px;">
-                ❌ Erreur de chargement
+              <div style="width:300px;height:200px;background:#ffebee;display:flex;align-items:center;justify-content:center;border-radius:8px;color:#c62828;margin-top:6px;">
+                <div style="text-align:center;padding:20px;">
+                  <div style="font-size:40px;margin-bottom:10px;">⚠️</div>
+                  <div>Erreur de chargement</div>
+                </div>
               </div>
             </div>
           `);
@@ -232,16 +272,16 @@ Papa.parse("trip.csv", {
     
     if (bounds.length) {
       map.fitBounds(bounds);
-      console.log(`Map fitted to ${bounds.length} points`);
+      console.log(`🗺️ Map fitted to ${bounds.length} points`);
     }
     
     if (points.length > 1) {
-      console.log('Drawing routes...');
+      console.log(`🛣️ Drawing routes between ${points.length} points...\n`);
       drawRouteSegments(points);
     }
   },
   error: function(error) {
-    console.error('CSV parse error:', error);
+    console.error('❌ CSV parse error:', error);
   }
 });
 
@@ -253,7 +293,7 @@ function drawRouteSegments(points) {
   
   function next() {
     if (i >= points.length - 1) {
-      console.log('✓ All routes drawn');
+      console.log('✅ All routes drawn\n');
       return;
     }
     
@@ -284,7 +324,7 @@ function drawRouteSegments(points) {
       const distance = route.summary ? route.summary.totalDistance : 0;
       const time = route.summary ? route.summary.totalTime : 0;
       
-      console.log(`✓ Route ${i+1} found: ${(distance/1000).toFixed(1)}km`);
+      console.log(`  ✓ Route ${i+1}: ${(distance/1000).toFixed(1)}km, ${(time/3600).toFixed(1)}h`);
       
       const routeLine = routing._line;
       if (routeLine) {
@@ -305,7 +345,7 @@ function drawRouteSegments(points) {
     });
     
     routing.on("routingerror", (e) => {
-      console.warn(`Route ${i+1} error, drawing straight line`);
+      console.log(`  ⚠️ Route ${i+1}: No road, drawing straight line`);
       
       const line = L.polyline([from, to], {
         color: "#e53935",
@@ -333,7 +373,7 @@ function drawRouteSegments(points) {
   next();
 }
 
-console.log('✓ Script loaded successfully');
+console.log('✅ Script loaded successfully\n');
 </script>
 </body>
 </html>
