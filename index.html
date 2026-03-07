@@ -11,8 +11,64 @@ body {
   margin: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont;
 }
+#header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 16px 20px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+#header h3 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+#csv-selector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+#csv-selector label {
+  font-size: 14px;
+  font-weight: 500;
+}
+#csv-select {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  background: white;
+  color: #333;
+  font-size: 14px;
+  cursor: pointer;
+  min-width: 200px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+#csv-select:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+#load-btn {
+  padding: 8px 20px;
+  background: #4caf50;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+#load-btn:hover {
+  background: #45a049;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+#load-btn:active {
+  transform: translateY(0);
+}
 #map {
-  height: 90vh;
+  height: calc(100vh - 70px);
 }
 .popup-img {
   width: 100%;
@@ -45,6 +101,22 @@ body {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
+.no-image {
+  width: 100%;
+  max-width: 300px;
+  height: 200px;
+  margin-top: 6px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 14px;
+  text-align: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
 .img-credit {
   font-size: 10px;
   color: #666;
@@ -54,236 +126,323 @@ body {
   color: #1976d2;
   text-decoration: none;
 }
+.img-credit a:hover {
+  text-decoration: underline;
+}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
 </head>
 <body>
-<h3 style="padding:8px">🌍 Travel Route</h3>
+<div id="header">
+  <h3>🌍 Travel Map</h3>
+  <div id="csv-selector">
+    <label for="csv-select">Itinéraire:</label>
+    <select id="csv-select">
+      <option value="">Chargement...</option>
+    </select>
+    <button id="load-btn" onclick="loadSelectedCSV()">Charger</button>
+  </div>
+</div>
 <div id="map"></div>
+
 <script>
 // ========================
 // CONFIGURATION
 // ========================
 const UNSPLASH_ACCESS_KEY = 'jULX67EqogcoOXFzX1B9aMycHG0mkue8yVMzMFJs4eY';
 
+// URL de votre repo GitHub (format: https://raw.githubusercontent.com/USERNAME/REPO/BRANCH/)
+// IMPORTANT: Modifiez cette URL avec votre propre repo !
+const GITHUB_REPO_URL = 'https://raw.githubusercontent.com/USERNAME/REPO/main/';
+
+// Liste des fichiers CSV disponibles dans votre repo
+// Vous pouvez aussi les charger dynamiquement depuis un fichier index.json
+const AVAILABLE_CSV_FILES = [
+  { name: 'Amérique du Sud 2024', file: 'trip.csv' },
+  { name: 'Europe 2023', file: 'europe-trip.csv' },
+  { name: 'Asie 2022', file: 'asia-trip.csv' },
+  // Ajoutez vos fichiers CSV ici
+];
+
 const map = L.map("map").setView([15, -90], 5);
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution: "© OpenStreetMap"
 }).addTo(map);
 
+let currentRoutes = []; // Pour stocker les routes actuelles
+
 // ========================
-// IMAGE FETCH FUNCTION
+// POPULATE CSV SELECTOR
 // ========================
-async function getPlaceImage(placeName, lat, lng, index) {
-  console.log(`🔍 Searching image for: ${placeName}`);
+function populateCSVSelector() {
+  const select = document.getElementById('csv-select');
+  select.innerHTML = '<option value="">Sélectionnez un itinéraire...</option>';
   
-  // Nettoyer le nom pour une meilleure recherche
+  AVAILABLE_CSV_FILES.forEach(csv => {
+    const option = document.createElement('option');
+    option.value = csv.file;
+    option.textContent = csv.name;
+    select.appendChild(option);
+  });
+}
+
+// ========================
+// LOAD SELECTED CSV
+// ========================
+function loadSelectedCSV() {
+  const select = document.getElementById('csv-select');
+  const selectedFile = select.value;
+  
+  if (!selectedFile) {
+    alert('Veuillez sélectionner un itinéraire');
+    return;
+  }
+  
+  // Nettoyer la carte
+  clearMap();
+  
+  // Charger le nouveau CSV
+  const csvUrl = GITHUB_REPO_URL + selectedFile;
+  console.log(`📄 Loading CSV: ${csvUrl}`);
+  loadCSV(csvUrl);
+}
+
+// ========================
+// CLEAR MAP
+// ========================
+function clearMap() {
+  // Supprimer tous les markers
+  map.eachLayer(layer => {
+    if (layer instanceof L.Marker || layer instanceof L.Polyline) {
+      map.removeLayer(layer);
+    }
+  });
+  
+  // Supprimer les routes
+  currentRoutes.forEach(route => {
+    if (route && route._container) {
+      map.removeControl(route);
+    }
+  });
+  currentRoutes = [];
+}
+
+// ========================
+// HELPER: Extract smart keywords
+// ========================
+function extractKeywords(placeName) {
+  const keywordMap = {
+    'parc': ['national park', 'mountains', 'nature', 'landscape'],
+    'park': ['national park', 'nature', 'wilderness'],
+    'national': ['national park', 'mountains', 'nature'],
+    'montagne': ['mountains', 'peaks', 'alpine'],
+    'mountain': ['mountains', 'peaks', 'summit'],
+    'volcan': ['volcano', 'mountains', 'nature'],
+    'volcano': ['volcano', 'mountains', 'crater'],
+    'désert': ['desert', 'sand dunes', 'arid'],
+    'desert': ['desert', 'sand dunes', 'landscape'],
+    'forêt': ['forest', 'jungle', 'trees', 'nature'],
+    'forest': ['forest', 'woodland', 'trees'],
+    'jungle': ['jungle', 'rainforest', 'tropical'],
+    'plage': ['beach', 'ocean', 'coastline', 'tropical'],
+    'beach': ['beach', 'ocean', 'sand', 'coastline'],
+    'lac': ['lake', 'water', 'mountains'],
+    'lake': ['lake', 'water', 'nature'],
+    'rivière': ['river', 'water', 'nature'],
+    'river': ['river', 'water', 'canyon'],
+    'cascade': ['waterfall', 'nature', 'water'],
+    'waterfall': ['waterfall', 'cascade', 'nature'],
+    'canyon': ['canyon', 'gorge', 'rock formations'],
+    'glacier': ['glacier', 'ice', 'mountains'],
+    'île': ['island', 'tropical', 'beach'],
+    'island': ['island', 'ocean', 'coastline'],
+    'ville': ['city', 'urban', 'architecture'],
+    'city': ['city', 'skyline', 'architecture'],
+    'capitale': ['capital city', 'architecture', 'urban'],
+    'capital': ['capital city', 'skyline'],
+    'temple': ['temple', 'architecture', 'ancient'],
+    'église': ['church', 'cathedral', 'architecture'],
+    'church': ['church', 'cathedral', 'architecture'],
+    'cathédrale': ['cathedral', 'church', 'architecture'],
+    'cathedral': ['cathedral', 'architecture', 'gothic'],
+    'château': ['castle', 'fortress', 'architecture'],
+    'castle': ['castle', 'fortress', 'medieval'],
+    'ruine': ['ruins', 'ancient', 'archaeological'],
+    'ruins': ['ruins', 'ancient', 'archaeology'],
+  };
+  
+  const lowerPlace = placeName.toLowerCase();
+  
+  for (const [key, keywords] of Object.entries(keywordMap)) {
+    if (lowerPlace.includes(key)) {
+      return keywords[0];
+    }
+  }
+  
+  const words = placeName.split(' ').filter(w => w.length > 3);
+  return words[words.length - 1] || 'landscape';
+}
+
+// ========================
+// IMAGE FETCH - UNSPLASH ONLY
+// ========================
+async function getPlaceImage(placeName) {
+  console.log(`🔍 Searching Unsplash for: ${placeName}`);
+  
   const cleanName = placeName
-    .replace(/\s+(Brésil|Brazil|Colombie|Colombia|Argentina|Argentine|Pérou|Peru|Chile|Chili|Bolivie|Bolivia|Tadjikistan|Tajikistan)/gi, '')
+    .replace(/\s+(Brésil|Brazil|Colombie|Colombia|Argentina|Argentine|Pérou|Peru|Chile|Chili|Bolivie|Bolivia|Tadjikistan|Tajikistan|Australie|Australia)/gi, '')
     .trim();
   
-  console.log(`   Cleaned name: ${cleanName}`);
+  const searchTerms = [
+    cleanName,
+    cleanName.split(' ')[0],
+    extractKeywords(placeName),
+  ].filter(term => term && term.length > 2);
   
-  // Strategy 1: Unsplash
-  try {
-    console.log('   Trying Unsplash...');
-    const response = await fetch(
-      `https://api.unsplash.com/search/photos?query=${encodeURIComponent(cleanName)}&per_page=1&orientation=landscape`,
-      {
-        headers: {
-          'Authorization': `Client-ID ${UNSPLASH_ACCESS_KEY}`
+  for (const term of searchTerms) {
+    try {
+      const response = await fetch(
+        `https://api.unsplash.com/search/photos?query=${encodeURIComponent(term)}&per_page=1&orientation=landscape`,
+        {
+          headers: {
+            'Authorization': `Client-ID ${UNSPLASH_ACCESS_KEY}`
+          }
+        }
+      );
+      
+      if (response.ok) {
+        const data = await response.json();
+        
+        if (data.results && data.results.length > 0) {
+          const photo = data.results[0];
+          console.log(`   ✓ Found with "${term}"`);
+          return {
+            url: photo.urls.regular,
+            credit: `Photo by ${photo.user.name} on Unsplash`,
+            creditUrl: photo.links.html,
+            found: true
+          };
         }
       }
-    );
-    
-    console.log(`   Unsplash status: ${response.status}`);
-    
-    if (response.ok) {
-      const data = await response.json();
-      console.log(`   Unsplash results: ${data.results ? data.results.length : 0}`);
-      
-      if (data.results && data.results.length > 0) {
-        const photo = data.results[0];
-        console.log('   ✓ Unsplash image found!');
-        return {
-          url: photo.urls.regular,
-          credit: `Photo by ${photo.user.name} on Unsplash`,
-          creditUrl: photo.links.html,
-          source: 'Unsplash'
-        };
-      }
+    } catch (error) {
+      console.error('   Unsplash error:', error.message);
     }
-  } catch (error) {
-    console.error('   Unsplash error:', error.message);
   }
   
-  // Strategy 2: Wikimedia Commons
-  try {
-    console.log('   Trying Wikimedia...');
-    const searchUrl = `https://en.wikipedia.org/w/api.php?` +
-      `action=query&format=json&origin=*&` +
-      `prop=pageimages&piprop=original&` +
-      `titles=${encodeURIComponent(cleanName)}`;
-    
-    const response = await fetch(searchUrl);
-    const data = await response.json();
-    
-    if (data.query && data.query.pages) {
-      const pages = Object.values(data.query.pages);
-      if (pages[0] && pages[0].original) {
-        console.log('   ✓ Wikimedia image found!');
-        return {
-          url: pages[0].original.source,
-          credit: 'Wikimedia Commons',
-          creditUrl: null,
-          source: 'Wikipedia'
-        };
-      }
-    }
-    console.log('   No Wikimedia image');
-  } catch (error) {
-    console.error('   Wikimedia error:', error.message);
-  }
-  
-  // Strategy 3: LoremFlickr (toujours fonctionne, vraies photos)
-  console.log('   Using LoremFlickr...');
-  const keywords = cleanName.split(' ').slice(0, 2).join(',');
-  return {
-    url: `https://loremflickr.com/400/300/${keywords}?lock=${index}`,
-    credit: 'LoremFlickr',
-    creditUrl: null,
-    source: 'LoremFlickr'
-  };
+  console.log('   ✗ No image found');
+  return { found: false };
 }
 
 // ========================
 // LOAD CSV
 // ========================
-Papa.parse("trip.csv", {
-  download: true,
-  header: true,
-  skipEmptyLines: true,
-  complete: function(results) {
-    console.log(`📄 CSV loaded: ${results.data.length} locations`);
-    const points = [];
-    const bounds = [];
-    
-    results.data.forEach((row, idx) => {
-      const lat = parseFloat(row.Latitude);
-      const lng = parseFloat(row.Longitude);
-      const name = row.Lieu || row.Place || "Unknown";
-      const days = row["Jours sur place"] || row.Days || "N/A";
+function loadCSV(csvUrl) {
+  Papa.parse(csvUrl, {
+    download: true,
+    header: true,
+    skipEmptyLines: true,
+    complete: function(results) {
+      console.log(`📄 CSV loaded: ${results.data.length} locations`);
+      const points = [];
+      const bounds = [];
       
-      if (isNaN(lat) || isNaN(lng)) {
-        console.warn(`⚠️ Invalid coordinates for: ${name}`);
-        return;
-      }
-      
-      console.log(`📍 Adding marker ${idx + 1}: ${name}`);
-      const marker = L.marker([lat, lng]).addTo(map);
-      
-      const popupContent = `
-        <div class="popup-content">
-          <strong>${name}</strong><br>
-          ⏱ ${days} jour(s)<br>
-          <div class="loading-img">🔍 Recherche...</div>
-        </div>
-      `;
-      
-      marker.bindPopup(popupContent, { maxWidth: 350 });
-      
-      // Load image when popup is opened
-      marker.on('popupopen', async function(e) {
-        console.log(`\n👆 Popup opened for: ${name}`);
-        const popup = e.popup;
+      results.data.forEach((row, idx) => {
+        const lat = parseFloat(row.Latitude);
+        const lng = parseFloat(row.Longitude);
+        const name = row.Lieu || row.Place || "Unknown";
+        const days = row["Jours sur place"] || row.Days || "N/A";
         
-        try {
-          const imageData = await getPlaceImage(name, lat, lng, idx);
+        if (isNaN(lat) || isNaN(lng)) {
+          console.warn(`⚠️ Invalid coordinates for: ${name}`);
+          return;
+        }
+        
+        console.log(`📍 Adding marker ${idx + 1}: ${name}`);
+        const marker = L.marker([lat, lng]).addTo(map);
+        
+        const popupContent = `
+          <div class="popup-content">
+            <strong>${name}</strong><br>
+            ⏱ ${days} jour(s)<br>
+            <div class="loading-img">🔍 Recherche Unsplash...</div>
+          </div>
+        `;
+        
+        marker.bindPopup(popupContent, { maxWidth: 350 });
+        
+        marker.on('popupopen', async function(e) {
+          console.log(`\n👆 Popup opened for: ${name}`);
+          const popup = e.popup;
           
-          console.log(`   Selected source: ${imageData.source}`);
-          console.log(`   Image URL: ${imageData.url}`);
-          
-          const creditHtml = imageData.creditUrl 
-            ? `<a href="${imageData.creditUrl}" target="_blank" class="img-credit">${imageData.credit}</a>`
-            : `<div class="img-credit">${imageData.credit}</div>`;
-          
-          const imgId = `img-${idx}`;
-          
-          popup.setContent(`
-            <div class="popup-content">
-              <strong>${name}</strong><br>
-              ⏱ ${days} jour(s)<br>
-              <img id="${imgId}" 
-                   class="popup-img" 
-                   src="${imageData.url}" 
-                   alt="${name}">
-              ${creditHtml}
-            </div>
-          `);
-          
-          // Ajouter les handlers après que l'image soit dans le DOM
-          setTimeout(() => {
-            const img = document.getElementById(imgId);
-            if (img) {
-              img.onload = function() {
-                console.log(`   ✅ Image loaded successfully from ${imageData.source}`);
-              };
-              img.onerror = function() {
-                console.error(`   ❌ Image failed to load from ${imageData.source}`);
-                console.error(`   Failed URL: ${this.src}`);
-                // Dernier fallback absolu
-                this.style.display = 'none';
-                this.insertAdjacentHTML('afterend', 
-                  `<div style="width:300px;height:200px;background:#e3f2fd;display:flex;align-items:center;justify-content:center;border-radius:8px;color:#1976d2;text-align:center;padding:20px;margin-top:6px;">
+          try {
+            const imageData = await getPlaceImage(name);
+            
+            if (imageData.found) {
+              // Image trouvée sur Unsplash
+              const creditHtml = `<a href="${imageData.creditUrl}" target="_blank" class="img-credit">${imageData.credit}</a>`;
+              
+              popup.setContent(`
+                <div class="popup-content">
+                  <strong>${name}</strong><br>
+                  ⏱ ${days} jour(s)<br>
+                  <img class="popup-img" 
+                       src="${imageData.url}" 
+                       alt="${name}"
+                       onload="console.log('✅ Image loaded')"
+                       onerror="console.error('❌ Image failed to load')">
+                  ${creditHtml}
+                </div>
+              `);
+            } else {
+              // Pas d'image trouvée
+              popup.setContent(`
+                <div class="popup-content">
+                  <strong>${name}</strong><br>
+                  ⏱ ${days} jour(s)<br>
+                  <div class="no-image">
                     <div>
                       <div style="font-size:40px;margin-bottom:10px;">📍</div>
-                      <div style="font-weight:bold;">${name}</div>
-                      <div style="font-size:12px;margin-top:8px;color:#666;">${lat.toFixed(4)}, ${lng.toFixed(4)}</div>
+                      <div>Aucune photo disponible</div>
                     </div>
-                  </div>`
-                );
-              };
-            }
-          }, 100);
-          
-        } catch (error) {
-          console.error('❌ Error in getPlaceImage:', error);
-          popup.setContent(`
-            <div class="popup-content">
-              <strong>${name}</strong><br>
-              ⏱ ${days} jour(s)<br>
-              <div style="width:300px;height:200px;background:#ffebee;display:flex;align-items:center;justify-content:center;border-radius:8px;color:#c62828;margin-top:6px;">
-                <div style="text-align:center;padding:20px;">
-                  <div style="font-size:40px;margin-bottom:10px;">⚠️</div>
-                  <div>Erreur de chargement</div>
+                  </div>
                 </div>
+              `);
+            }
+            
+          } catch (error) {
+            console.error('❌ Error:', error);
+            popup.setContent(`
+              <div class="popup-content">
+                <strong>${name}</strong><br>
+                ⏱ ${days} jour(s)
               </div>
-            </div>
-          `);
-        }
+            `);
+          }
+        });
+        
+        const ll = L.latLng(lat, lng);
+        points.push(ll);
+        bounds.push(ll);
       });
       
-      const ll = L.latLng(lat, lng);
-      points.push(ll);
-      bounds.push(ll);
-    });
-    
-    if (bounds.length) {
-      map.fitBounds(bounds);
-      console.log(`🗺️ Map fitted to ${bounds.length} points`);
+      if (bounds.length) {
+        map.fitBounds(bounds);
+        console.log(`🗺️ Map fitted to ${bounds.length} points`);
+      }
+      
+      if (points.length > 1) {
+        console.log(`🛣️ Drawing routes...\n`);
+        drawRouteSegments(points);
+      }
+    },
+    error: function(error) {
+      console.error('❌ CSV load error:', error);
+      alert(`Erreur de chargement du CSV: ${error.message}`);
     }
-    
-    if (points.length > 1) {
-      console.log(`🛣️ Drawing routes between ${points.length} points...\n`);
-      drawRouteSegments(points);
-    }
-  },
-  error: function(error) {
-    console.error('❌ CSV parse error:', error);
-  }
-});
+  });
+}
 
 // ========================
 // ROUTING
@@ -312,19 +471,21 @@ function drawRouteSegments(points) {
       createMarker: () => null,
       lineOptions: {
         styles: [{
-          color: '#1e88e5',
+          color: '#667eea',
           opacity: 0.8,
           weight: 5
         }]
       }
     }).addTo(map);
     
+    currentRoutes.push(routing);
+    
     routing.on("routesfound", e => {
       const route = e.routes[0];
       const distance = route.summary ? route.summary.totalDistance : 0;
       const time = route.summary ? route.summary.totalTime : 0;
       
-      console.log(`  ✓ Route ${i+1}: ${(distance/1000).toFixed(1)}km, ${(time/3600).toFixed(1)}h`);
+      console.log(`  ✓ Route ${i+1}: ${(distance/1000).toFixed(1)}km`);
       
       const routeLine = routing._line;
       if (routeLine) {
@@ -345,7 +506,7 @@ function drawRouteSegments(points) {
     });
     
     routing.on("routingerror", (e) => {
-      console.log(`  ⚠️ Route ${i+1}: No road, drawing straight line`);
+      console.log(`  ⚠️ Route ${i+1}: No road`);
       
       const line = L.polyline([from, to], {
         color: "#e53935",
@@ -373,7 +534,18 @@ function drawRouteSegments(points) {
   next();
 }
 
-console.log('✅ Script loaded successfully\n');
+// ========================
+// INITIALIZATION
+// ========================
+populateCSVSelector();
+
+// Charger le premier CSV par défaut
+if (AVAILABLE_CSV_FILES.length > 0) {
+  document.getElementById('csv-select').value = AVAILABLE_CSV_FILES[0].file;
+  loadSelectedCSV();
+}
+
+console.log('✅ Travel Map loaded');
 </script>
 </body>
 </html>
