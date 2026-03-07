@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -66,6 +67,11 @@ body {
 }
 #load-btn:active {
   transform: translateY(0);
+}
+#load-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
 }
 #map {
   height: calc(100vh - 70px);
@@ -153,25 +159,59 @@ body {
 // ========================
 const UNSPLASH_ACCESS_KEY = 'jULX67EqogcoOXFzX1B9aMycHG0mkue8yVMzMFJs4eY';
 
-// URL de votre repo GitHub (format: https://raw.githubusercontent.com/USERNAME/REPO/BRANCH/)
+// URL de base de votre repo GitHub
 // IMPORTANT: Modifiez cette URL avec votre propre repo !
+// Format: 'https://raw.githubusercontent.com/USERNAME/REPO/BRANCH/'
 const GITHUB_REPO_URL = 'https://raw.githubusercontent.com/USERNAME/REPO/main/';
 
-// Liste des fichiers CSV disponibles dans votre repo
-// Vous pouvez aussi les charger dynamiquement depuis un fichier index.json
-const AVAILABLE_CSV_FILES = [
-  { name: 'Amérique du Sud 2024', file: 'trip.csv' },
-  { name: 'Europe 2023', file: 'europe-trip.csv' },
-  { name: 'Asie 2022', file: 'asia-trip.csv' },
-  // Ajoutez vos fichiers CSV ici
-];
+// Nom du fichier index (contient la liste des CSV disponibles)
+const INDEX_FILE = 'trips-index.json';
 
 const map = L.map("map").setView([15, -90], 5);
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution: "© OpenStreetMap"
 }).addTo(map);
 
-let currentRoutes = []; // Pour stocker les routes actuelles
+let currentRoutes = [];
+let availableCSVFiles = [];
+
+// ========================
+// LOAD INDEX FILE
+// ========================
+async function loadIndexFile() {
+  const select = document.getElementById('csv-select');
+  const loadBtn = document.getElementById('load-btn');
+  
+  try {
+    console.log(`📋 Loading index from: ${GITHUB_REPO_URL}${INDEX_FILE}`);
+    
+    const response = await fetch(GITHUB_REPO_URL + INDEX_FILE);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    availableCSVFiles = data.trips || data;
+    
+    console.log(`✅ Found ${availableCSVFiles.length} trips in index`);
+    
+    populateCSVSelector();
+    
+    // Auto-charger le premier CSV
+    if (availableCSVFiles.length > 0) {
+      select.value = availableCSVFiles[0].file;
+      loadSelectedCSV();
+    }
+    
+  } catch (error) {
+    console.error('❌ Error loading index file:', error);
+    select.innerHTML = `<option value="">Erreur: ${error.message}</option>`;
+    loadBtn.disabled = true;
+    
+    alert(`Impossible de charger la liste des itinéraires.\n\nVérifiez que le fichier "${INDEX_FILE}" existe dans votre repo GitHub.\n\nErreur: ${error.message}`);
+  }
+}
 
 // ========================
 // POPULATE CSV SELECTOR
@@ -180,7 +220,7 @@ function populateCSVSelector() {
   const select = document.getElementById('csv-select');
   select.innerHTML = '<option value="">Sélectionnez un itinéraire...</option>';
   
-  AVAILABLE_CSV_FILES.forEach(csv => {
+  availableCSVFiles.forEach(csv => {
     const option = document.createElement('option');
     option.value = csv.file;
     option.textContent = csv.name;
@@ -200,10 +240,8 @@ function loadSelectedCSV() {
     return;
   }
   
-  // Nettoyer la carte
   clearMap();
   
-  // Charger le nouveau CSV
   const csvUrl = GITHUB_REPO_URL + selectedFile;
   console.log(`📄 Loading CSV: ${csvUrl}`);
   loadCSV(csvUrl);
@@ -213,14 +251,12 @@ function loadSelectedCSV() {
 // CLEAR MAP
 // ========================
 function clearMap() {
-  // Supprimer tous les markers
   map.eachLayer(layer => {
     if (layer instanceof L.Marker || layer instanceof L.Polyline) {
       map.removeLayer(layer);
     }
   });
   
-  // Supprimer les routes
   currentRoutes.forEach(route => {
     if (route && route._container) {
       map.removeControl(route);
@@ -380,7 +416,6 @@ function loadCSV(csvUrl) {
             const imageData = await getPlaceImage(name);
             
             if (imageData.found) {
-              // Image trouvée sur Unsplash
               const creditHtml = `<a href="${imageData.creditUrl}" target="_blank" class="img-credit">${imageData.credit}</a>`;
               
               popup.setContent(`
@@ -396,7 +431,6 @@ function loadCSV(csvUrl) {
                 </div>
               `);
             } else {
-              // Pas d'image trouvée
               popup.setContent(`
                 <div class="popup-content">
                   <strong>${name}</strong><br>
@@ -537,15 +571,10 @@ function drawRouteSegments(points) {
 // ========================
 // INITIALIZATION
 // ========================
-populateCSVSelector();
+loadIndexFile();
 
-// Charger le premier CSV par défaut
-if (AVAILABLE_CSV_FILES.length > 0) {
-  document.getElementById('csv-select').value = AVAILABLE_CSV_FILES[0].file;
-  loadSelectedCSV();
-}
-
-console.log('✅ Travel Map loaded');
+console.log('✅ Travel Map initialized');
 </script>
+
 </body>
 </html>
