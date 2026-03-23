@@ -1,14 +1,14 @@
 {
-“trips”: [
-{
-“name”: “🌎 world tour”,
-“file”: “trip.csv”,
-“description”: “nice places all over the world”
-},
-{
-“name”: “rockies road trip”,
-“file”: “RockiesRoadTrip.csv”,
-“description”: “rockies”
-},
-]
+  "trips": [
+    {
+      "name": "🌎 world tour",
+      "file": "trip.csv",
+      "description": "nice places all over the world"
+    },
+    {
+      "name": "🏔️ rockies road trip",
+      "file": "RockiesRoadTrip.csv",
+      "description": "rockies"
+    }
+  ]
 }
