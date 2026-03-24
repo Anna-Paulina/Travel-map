@@ -1,7 +1,8 @@
+//pourquio c'est anglais ? parce que je l veux
 {
   "trips": [
     {
-      "name": "🌎 world tour",
+      "name": "🌎 world tour ",
       "file": "trip.csv",
       "description": "nice places all over the world"
     },
