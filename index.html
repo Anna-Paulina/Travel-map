@@ -1,3 +1,8 @@
+// Bonjour fellow programmeur,
+// Je m'excuse par avance pour le peu de commentaire
+// Meme moi je me perd des fois
+// Bon courage et puissent les dieux du clavier être avec vous
+
 <!DOCTYPE html>
 
 <html lang="en">
@@ -154,15 +159,15 @@ body {
 <div id="map"></div>
 
 <script>
-// ========================
+
 // CONFIGURATION
-// ========================
+
 const UNSPLASH_ACCESS_KEY = 'jULX67EqogcoOXFzX1B9aMycHG0mkue8yVMzMFJs4eY';
 
-// URL de base de votre repo GitHub
+// URL de base repo GitHub
 const GITHUB_REPO_URL = 'https://raw.githubusercontent.com/Anna-Paulina/Travel-map/main/';
 
-// Nom du fichier index (contient la liste des CSV disponibles)
+// Nom du fichier index
 const INDEX_FILE = 'trips-index.json';
 
 const map = L.map("map").setView([15, -90], 5);
@@ -173,9 +178,9 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 let currentRoutes = [];
 let availableCSVFiles = [];
 
-// ========================
+
 // LOAD INDEX FILE
-// ========================
+
 async function loadIndexFile() {
   const select = document.getElementById('csv-select');
   const loadBtn = document.getElementById('load-btn');
@@ -203,17 +208,17 @@ async function loadIndexFile() {
     }
     
   } catch (error) {
-    console.error('❌ Error loading index file:', error);
+    console.error('Error loading index file:', error);
     select.innerHTML = `<option value="">Erreur: ${error.message}</option>`;
     loadBtn.disabled = true;
     
-    alert(`Impossible de charger la liste des itinéraires.\n\nVérifiez que le fichier "${INDEX_FILE}" existe dans votre repo GitHub.\n\nErreur: ${error.message}`);
+    alert(`Impossible de charger la liste des itinéraires.\n\nVérifiez que le fichier "${INDEX_FILE}" existe dans el repo GitHub.\n\nErreur: ${error.message}`);
   }
 }
 
-// ========================
+
 // POPULATE CSV SELECTOR
-// ========================
+
 function populateCSVSelector() {
   const select = document.getElementById('csv-select');
   select.innerHTML = '<option value="">Sélectionnez un itinéraire...</option>';
@@ -226,15 +231,14 @@ function populateCSVSelector() {
   });
 }
 
-// ========================
 // LOAD SELECTED CSV
-// ========================
+
 function loadSelectedCSV() {
   const select = document.getElementById('csv-select');
   const selectedFile = select.value;
   
   if (!selectedFile) {
-    alert('Veuillez sélectionner un itinéraire');
+    alert('Veuillez sélectionnr un itinéraire');
     return;
   }
   
@@ -245,9 +249,8 @@ function loadSelectedCSV() {
   loadCSV(csvUrl);
 }
 
-// ========================
 // CLEAR MAP
-// ========================
+
 function clearMap() {
   map.eachLayer(layer => {
     if (layer instanceof L.Marker || layer instanceof L.Polyline) {
@@ -263,9 +266,8 @@ function clearMap() {
   currentRoutes = [];
 }
 
-// ========================
-// HELPER: Extract smart keywords
-// ========================
+//ouais, ça marche okay, jugez pas
+  
 function extractKeywords(placeName) {
   const keywordMap = {
     'parc': ['national park', 'mountains', 'nature', 'landscape'],
@@ -319,11 +321,12 @@ function extractKeywords(placeName) {
   return words[words.length - 1] || 'landscape';
 }
 
-// ========================
-// IMAGE FETCH - UNSPLASH ONLY
-// ========================
+// IMAGE FETCH - UNSPLASH
+
 async function getPlaceImage(placeName) {
-  console.log(`🔍 Searching Unsplash for: ${placeName}`);
+  console.log(`Searching Unsplash for :: ${placeName}`);
+  
+  //ouais c'est relou, mais çamarche aussi
   
   const cleanName = placeName
     .replace(/\s+(Brésil|Brazil|Colombie|Colombia|Argentina|Argentine|Pérou|Peru|Chile|Chili|Bolivie|Bolivia|Tadjikistan|Tajikistan|Australie|Australia)/gi, '')
@@ -369,9 +372,9 @@ async function getPlaceImage(placeName) {
   return { found: false };
 }
 
-// ========================
+
 // LOAD CSV
-// ========================
+
 function loadCSV(csvUrl) {
   Papa.parse(csvUrl, {
     download: true,
@@ -389,25 +392,25 @@ function loadCSV(csvUrl) {
         const days = row["Jours sur place"] || row.Days || "N/A";
         
         if (isNaN(lat) || isNaN(lng)) {
-          console.warn(`⚠️ Invalid coordinates for: ${name}`);
+          console.warn(`Invalid coordinates for: ${name}`);
           return;
         }
         
-        console.log(`📍 Adding marker ${idx + 1}: ${name}`);
+        console.log(`Adding marker ${idx + 1}: ${name}`);
         const marker = L.marker([lat, lng]).addTo(map);
         
         const popupContent = `
           <div class="popup-content">
             <strong>${name}</strong><br>
             ⏱ ${days} jour(s)<br>
-            <div class="loading-img">🔍 Recherche Unsplash...</div>
+            <div class="loading-img">Recherche Unsplash...</div>
           </div>
         `;
         
         marker.bindPopup(popupContent, { maxWidth: 350 });
         
         marker.on('popupopen', async function(e) {
-          console.log(`\n👆 Popup opened for: ${name}`);
+          console.log(`\nPopup opened for: ${name}`);
           const popup = e.popup;
           
           try {
@@ -423,8 +426,8 @@ function loadCSV(csvUrl) {
                   <img class="popup-img" 
                        src="${imageData.url}" 
                        alt="${name}"
-                       onload="console.log('✅ Image loaded')"
-                       onerror="console.error('❌ Image failed to load')">
+                       onload="console.log(' Image loaded')"
+                       onerror="console.error('Image failed to load')">
                   ${creditHtml}
                 </div>
               `);
@@ -444,7 +447,7 @@ function loadCSV(csvUrl) {
             }
             
           } catch (error) {
-            console.error('❌ Error:', error);
+            console.error('Error:', error);
             popup.setContent(`
               <div class="popup-content">
                 <strong>${name}</strong><br>
@@ -461,30 +464,29 @@ function loadCSV(csvUrl) {
       
       if (bounds.length) {
         map.fitBounds(bounds);
-        console.log(`🗺️ Map fitted to ${bounds.length} points`);
+        console.log(`Map fitted to ${bounds.length} points`);
       }
       
       if (points.length > 1) {
-        console.log(`🛣️ Drawing routes...\n`);
+        console.log(`Drawing routes...\n`);
         drawRouteSegments(points);
       }
     },
     error: function(error) {
-      console.error('❌ CSV load error:', error);
+      console.error('CSV load error:', error);
       alert(`Erreur de chargement du CSV: ${error.message}`);
     }
   });
 }
 
-// ========================
 // ROUTING
-// ========================
+
 function drawRouteSegments(points) {
   let i = 0;
   
   function next() {
     if (i >= points.length - 1) {
-      console.log('✅ All routes drawn\n');
+      console.log('All routes drawn\n');
       return;
     }
     
@@ -525,7 +527,7 @@ function drawRouteSegments(points) {
           L.popup()
             .setLatLng(ev.latlng)
             .setContent(`
-              🚗 <strong>Segment ${i+1}</strong><br>
+              <strong>Segment ${i+1}</strong><br>
               Distance: ${(distance / 1000).toFixed(1)} km<br>
               Durée: ${(time / 3600).toFixed(1)} h
             `)
@@ -538,7 +540,7 @@ function drawRouteSegments(points) {
     });
     
     routing.on("routingerror", (e) => {
-      console.log(`  ⚠️ Route ${i+1}: No road`);
+      console.log(` Route ${i+1}: No road`);
       
       const line = L.polyline([from, to], {
         color: "#e53935",
@@ -552,7 +554,7 @@ function drawRouteSegments(points) {
         L.popup()
           .setLatLng(ev.latlng)
           .setContent(`
-            ⚠️ Pas de route disponible<br>
+            ⚠️Pas de route dispnible<br>
             Distance (à vol d'oiseau): ${km.toFixed(1)} km
           `)
           .openOn(map);
@@ -566,9 +568,8 @@ function drawRouteSegments(points) {
   next();
 }
 
-// ========================
 // INITIALIZATION
-// ========================
+
 loadIndexFile();
 
 console.log('✅ Travel Map initialized');
