@@ -1,9 +1,11 @@
 Latitude,Longitude,Lieu,Jours sur place
 29.976,-90.078224,La-Nouvelle-Orlean,2
-32.5149,-117.0382,Tijuana,2
-31.8667,-116.6000,Ensenada,2
-27.9769,-114.0611,Guerrero Negro,2
-27.2879,-112.8964,San Ignacio,1
+25.4267,-100.9954,Saltillo (Coahuila),2
+26.9069,-101.4206,Cuatro Cienegas (Coahuila),2
+24.0277,-104.6532,Durango (Durango),2
+23.6345,-103.6440,Zacatecas (Zacatecas),3
+21.8853,-102.2916,Aguascalientes,1
+20.5888,-100.3899,Santiago de Queretaro,2
 24.1426,-110.3128,La Paz,3
 22.8905,-109.9167,Cabo San Lucas,2
 19.4326,-99.1332,Mexico City,4
@@ -33,7 +35,6 @@ Latitude,Longitude,Lieu,Jours sur place
 -0.220,-78.512,Quito centre historique Équateur,2
 -1.406,-78.425,Volcan Chimborazo Équateur,2
 -0.678,-80.093,Isla de la Plata Équateur,3
--0.953,-90.965,Îles Galápagos Santa Cruz,6
 0.044,-77.345,Amazonie Colombienne Leticia,4
 -3.067,-60.025,Amazonie Brésil Manaus,5
 -4.092,-63.127,Parc Jaú Amazonie Brésil,4
