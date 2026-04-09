@@ -1,5 +1,10 @@
 <!DOCTYPE html>
-
+<!-- 
+  Bonjour fellow programmeur,
+  Je m'excuse par avance pour le peu de commentaire
+  Même moi je me perds des fois
+  Bon courage et puissent les dieux du clavier être avec vous
+-->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -26,6 +31,11 @@ body {
   font-size: 24px;
   font-weight: 600;
 }
+#controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 #csv-selector {
   display: flex;
   align-items: center;
@@ -49,9 +59,8 @@ body {
 #csv-select:hover {
   box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
-#load-btn {
+#load-btn, #toggle-markers-btn {
   padding: 8px 20px;
-  background: #4caf50;
   border: none;
   border-radius: 6px;
   color: white;
@@ -60,15 +69,27 @@ body {
   font-size: 14px;
   transition: all 0.2s;
 }
+#load-btn {
+  background: #4caf50;
+}
 #load-btn:hover {
   background: #45a049;
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
-#load-btn:active {
+#toggle-markers-btn {
+  background: #ff9800;
+  display: none;
+}
+#toggle-markers-btn:hover {
+  background: #f57c00;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+#load-btn:active, #toggle-markers-btn:active {
   transform: translateY(0);
 }
-#load-btn:disabled {
+#load-btn:disabled, #toggle-markers-btn:disabled {
   background: #ccc;
   cursor: not-allowed;
   transform: none;
@@ -135,7 +156,56 @@ body {
 .img-credit a:hover {
   text-decoration: underline;
 }
+.welcome-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 1000;
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+.welcome-message h2 {
+  margin: 0 0 10px 0;
+  color: #667eea;
+  font-size: 28px;
+}
+.welcome-message p {
+  margin: 0;
+  color: #666;
+  font-size: 16px;
+}
+.route-popup {
+  min-width: 220px;
+}
+.route-stat {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px solid #eee;
+}
+.route-stat:last-child {
+  border-bottom: none;
+}
+.route-stat-label {
+  font-weight: 600;
+  color: #555;
+}
+.route-stat-value {
+  color: #667eea;
+  font-weight: 600;
+}
+.elevation-loading {
+  color: #999;
+  font-style: italic;
+  font-size: 12px;
+}
 </style>
+<!-- Charger le fichier de configuration d'abord -->
+<script src="config.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
@@ -143,35 +213,157 @@ body {
 <body>
 <div id="header">
   <h3>🌍 Travel Map</h3>
-  <div id="csv-selector">
-    <label for="csv-select">Itinéraire:</label>
-    <select id="csv-select">
-      <option value="">Chargement...</option>
-    </select>
-    <button id="load-btn" onclick="loadSelectedCSV()">Charger</button>
+  <div id="controls">
+    <div id="csv-selector">
+      <label for="csv-select">Itinéraire:</label>
+      <select id="csv-select">
+        <option value="">Chargement...</option>
+      </select>
+      <button id="load-btn" onclick="loadSelectedCSV()">Charger</button>
+    </div>
+    <button id="toggle-markers-btn" onclick="toggleMarkers()">
+      <span id="toggle-text">🙈 Masquer les points</span>
+    </button>
   </div>
 </div>
 <div id="map"></div>
 
 <script>
-// ========================
-// CONFIGURATION
-// ========================
-const UNSPLASH_ACCESS_KEY = 'jULX67EqogcoOXFzX1B9aMycHG0mkue8yVMzMFJs4eY';
+// Vérifier que CONFIG est chargé
+if (typeof CONFIG === 'undefined') {
+  alert('Erreur: Le fichier config.js n\'a pas été chargé correctement.');
+}
 
-// URL de base repo GitHub
-const GITHUB_REPO_URL = 'https://raw.githubusercontent.com/Anna-Paulina/Travel-map/main/';
-
-// Nom du fichier index
-const INDEX_FILE = 'trips-index.json';
-
-const map = L.map("map").setView([15, -90], 5);
+const map = L.map("map").setView([20, 0], 2);
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution: "© OpenStreetMap"
 }).addTo(map);
 
 let currentRoutes = [];
 let availableCSVFiles = [];
+let allMarkers = [];
+let markersVisible = true;
+let welcomeMessage = null;
+
+// Cache pour les altitudes (éviter de refaire les mêmes requêtes)
+const elevationCache = new Map();
+
+// ========================
+// ELEVATION API
+// ========================
+async function getElevation(lat, lng) {
+  const key = `${lat.toFixed(4)},${lng.toFixed(4)}`;
+  
+  // Vérifier le cache
+  if (elevationCache.has(key)) {
+    return elevationCache.get(key);
+  }
+  
+  try {
+    const response = await fetch(
+      `${CONFIG.ELEVATION_API}?locations=${lat},${lng}`
+    );
+    
+    if (!response.ok) {
+      throw new Error('Elevation API error');
+    }
+    
+    const data = await response.json();
+    
+    if (data.results && data.results.length > 0) {
+      const elevation = data.results[0].elevation;
+      elevationCache.set(key, elevation);
+      return elevation;
+    }
+  } catch (error) {
+    console.warn('Elevation fetch failed:', error);
+  }
+  
+  return null;
+}
+
+// Obtenir min/max elevation pour une route
+async function getRouteElevation(coordinates) {
+  // Prendre plusieurs points le long de la route (début, milieu, fin + quelques points intermédiaires)
+  const samplePoints = [];
+  const step = Math.max(1, Math.floor(coordinates.length / 10)); // Max 10 points
+  
+  for (let i = 0; i < coordinates.length; i += step) {
+    samplePoints.push(coordinates[i]);
+  }
+  
+  // Toujours inclure le dernier point
+  if (samplePoints[samplePoints.length - 1] !== coordinates[coordinates.length - 1]) {
+    samplePoints.push(coordinates[coordinates.length - 1]);
+  }
+  
+  const elevations = [];
+  
+  for (const coord of samplePoints) {
+    const elevation = await getElevation(coord.lat, coord.lng);
+    if (elevation !== null) {
+      elevations.push(elevation);
+    }
+    // Petit délai pour ne pas surcharger l'API
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
+  
+  if (elevations.length === 0) {
+    return null;
+  }
+  
+  return {
+    min: Math.round(Math.min(...elevations)),
+    max: Math.round(Math.max(...elevations))
+  };
+}
+
+// ========================
+// MESSAGE DE BIENVENUE
+// ========================
+function showWelcomeMessage() {
+  welcomeMessage = L.control({position: 'topleft'});
+  welcomeMessage.onAdd = function() {
+    const div = L.DomUtil.create('div', 'welcome-message');
+    div.innerHTML = `
+      <h2>🌍 Bienvenue !</h2>
+      <p>Sélectionnez un itinéraire ci-dessus pour commencer</p>
+    `;
+    return div;
+  };
+  welcomeMessage.addTo(map);
+}
+
+function hideWelcomeMessage() {
+  if (welcomeMessage) {
+    map.removeControl(welcomeMessage);
+    welcomeMessage = null;
+  }
+}
+
+// ========================
+// TOGGLE MARKERS
+// ========================
+function toggleMarkers() {
+  const toggleBtn = document.getElementById('toggle-markers-btn');
+  const toggleText = document.getElementById('toggle-text');
+  
+  markersVisible = !markersVisible;
+  
+  allMarkers.forEach(marker => {
+    if (markersVisible) {
+      marker.addTo(map);
+    } else {
+      map.removeLayer(marker);
+    }
+  });
+  
+  if (markersVisible) {
+    toggleText.textContent = '🙈 Masquer les points';
+  } else {
+    toggleText.textContent = '👁️ Afficher les points';
+  }
+}
 
 // ========================
 // LOAD INDEX FILE
@@ -181,9 +373,9 @@ async function loadIndexFile() {
   const loadBtn = document.getElementById('load-btn');
   
   try {
-    console.log(`📋 Loading index from: ${GITHUB_REPO_URL}${INDEX_FILE}`);
+    console.log(`📋 Loading index from: ${CONFIG.GITHUB_REPO_URL}${CONFIG.INDEX_FILE}`);
     
-    const response = await fetch(GITHUB_REPO_URL + INDEX_FILE);
+    const response = await fetch(CONFIG.GITHUB_REPO_URL + CONFIG.INDEX_FILE);
     
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -195,19 +387,14 @@ async function loadIndexFile() {
     console.log(`✅ Found ${availableCSVFiles.length} trips in index`);
     
     populateCSVSelector();
-    
-    // Auto-charger le premier CSV
-    if (availableCSVFiles.length > 0) {
-      select.value = availableCSVFiles[0].file;
-      loadSelectedCSV();
-    }
+    showWelcomeMessage();
     
   } catch (error) {
     console.error('❌ Error loading index file:', error);
     select.innerHTML = `<option value="">Erreur: ${error.message}</option>`;
     loadBtn.disabled = true;
     
-    alert(`Impossible de charger la liste des itinéraires.\n\nVérifiez que le fichier "${INDEX_FILE}" existe dans le repo GitHub.\n\nErreur: ${error.message}`);
+    alert(`Impossible de charger la liste des itinéraires.\n\nVérifiez que le fichier "${CONFIG.INDEX_FILE}" existe dans le repo GitHub.\n\nErreur: ${error.message}`);
   }
 }
 
@@ -238,9 +425,12 @@ function loadSelectedCSV() {
     return;
   }
   
+  hideWelcomeMessage();
+  document.getElementById('toggle-markers-btn').style.display = 'block';
+  
   clearMap();
   
-  const csvUrl = GITHUB_REPO_URL + selectedFile;
+  const csvUrl = CONFIG.GITHUB_REPO_URL + selectedFile;
   console.log(`📄 Loading CSV: ${csvUrl}`);
   loadCSV(csvUrl);
 }
@@ -261,6 +451,13 @@ function clearMap() {
     }
   });
   currentRoutes = [];
+  allMarkers = [];
+  markersVisible = true;
+  
+  const toggleText = document.getElementById('toggle-text');
+  if (toggleText) {
+    toggleText.textContent = '🙈 Masquer les points';
+  }
 }
 
 // ========================
@@ -343,7 +540,7 @@ async function getPlaceImage(placeName) {
         `https://api.unsplash.com/search/photos?query=${encodeURIComponent(term)}&per_page=1&orientation=landscape`,
         {
           headers: {
-            'Authorization': `Client-ID ${UNSPLASH_ACCESS_KEY}`
+            'Authorization': `Client-ID ${CONFIG.UNSPLASH_ACCESS_KEY}`
           }
         }
       );
@@ -396,7 +593,13 @@ function loadCSV(csvUrl) {
         }
         
         console.log(`📍 Adding marker ${idx + 1}: ${name}`);
-        const marker = L.marker([lat, lng]).addTo(map);
+        const marker = L.marker([lat, lng]);
+        
+        allMarkers.push(marker);
+        
+        if (markersVisible) {
+          marker.addTo(map);
+        }
         
         const popupContent = `
           <div class="popup-content">
@@ -479,7 +682,7 @@ function loadCSV(csvUrl) {
 }
 
 // ========================
-// ROUTING
+// ROUTING AVEC ÉLÉVATION
 // ========================
 function drawRouteSegments(points) {
   let i = 0;
@@ -517,21 +720,75 @@ function drawRouteSegments(points) {
     routing.on("routesfound", e => {
       const route = e.routes[0];
       const distance = route.summary ? route.summary.totalDistance : 0;
-      const time = route.summary ? route.summary.totalTime : 0;
+      const coordinates = route.coordinates;
       
       console.log(`  ✓ Route ${i+1}: ${(distance/1000).toFixed(1)}km`);
       
       const routeLine = routing._line;
       if (routeLine) {
-        routeLine.on("click", ev => {
-          L.popup()
+        routeLine.on("click", async (ev) => {
+          // Créer popup avec chargement
+          const popup = L.popup()
             .setLatLng(ev.latlng)
             .setContent(`
-              🚗 <strong>Segment ${i+1}</strong><br>
-              Distance: ${(distance / 1000).toFixed(1)} km<br>
-              Durée: ${(time / 3600).toFixed(1)} h
+              <div class="route-popup">
+                <strong>🚗 Segment ${i+1}</strong><br><br>
+                <div class="route-stat">
+                  <span class="route-stat-label">📏 Distance:</span>
+                  <span class="route-stat-value">${(distance / 1000).toFixed(1)} km</span>
+                </div>
+                <div class="route-stat">
+                  <span class="route-stat-label">⛰️ Altitude:</span>
+                  <span class="elevation-loading">Chargement...</span>
+                </div>
+              </div>
             `)
             .openOn(map);
+          
+          // Charger l'élévation en arrière-plan
+          try {
+            const elevation = await getRouteElevation(coordinates);
+            
+            if (elevation) {
+              popup.setContent(`
+                <div class="route-popup">
+                  <strong>🚗 Segment ${i+1}</strong><br><br>
+                  <div class="route-stat">
+                    <span class="route-stat-label">📏 Distance:</span>
+                    <span class="route-stat-value">${(distance / 1000).toFixed(1)} km</span>
+                  </div>
+                  <div class="route-stat">
+                    <span class="route-stat-label">⬇️ Alt. min:</span>
+                    <span class="route-stat-value">${elevation.min} m</span>
+                  </div>
+                  <div class="route-stat">
+                    <span class="route-stat-label">⬆️ Alt. max:</span>
+                    <span class="route-stat-value">${elevation.max} m</span>
+                  </div>
+                  <div class="route-stat">
+                    <span class="route-stat-label">📈 Dénivelé:</span>
+                    <span class="route-stat-value">${elevation.max - elevation.min} m</span>
+                  </div>
+                </div>
+              `);
+            } else {
+              popup.setContent(`
+                <div class="route-popup">
+                  <strong>🚗 Segment ${i+1}</strong><br><br>
+                  <div class="route-stat">
+                    <span class="route-stat-label">📏 Distance:</span>
+                    <span class="route-stat-value">${(distance / 1000).toFixed(1)} km</span>
+                  </div>
+                  <div class="route-stat">
+                    <span class="route-stat-label">⛰️ Altitude:</span>
+                    <span style="color:#999;font-size:12px;">Non disponible</span>
+                  </div>
+                </div>
+              `);
+            }
+          } catch (error) {
+            console.error('Elevation error:', error);
+          }
         });
       }
       
@@ -554,8 +811,13 @@ function drawRouteSegments(points) {
         L.popup()
           .setLatLng(ev.latlng)
           .setContent(`
-            ⚠️ Pas de route disponible<br>
-            Distance (à vol d'oiseau): ${km.toFixed(1)} km
+            <div class="route-popup">
+              <strong>⚠️ Pas de route disponible</strong><br><br>
+              <div class="route-stat">
+                <span class="route-stat-label">📏 Distance (vol d'oiseau):</span>
+                <span class="route-stat-value">${km.toFixed(1)} km</span>
+              </div>
+            </div>
           `)
           .openOn(map);
       });
