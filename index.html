@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <!-- 
-  Bonjour ami de bdsm,
+  Bonjour fellow programmeur,
   Je m'excuse par avance pour le peu de commentaire
   Même moi je me perds des fois
   Bon courage et puissent les dieux du clavier être avec vous
-  Oui il y a des lignes de codes pour des trucs qui ne marchent pas
 -->
 <html lang="en">
 <head>
@@ -223,7 +222,7 @@ body {
       <button id="load-btn" onclick="loadSelectedCSV()">Charger</button>
     </div>
     <button id="toggle-markers-btn" onclick="toggleMarkers()">
-      <span id="toggle-text">Masquer les points</span>
+      <span id="toggle-text">🙈 Masquer les points</span>
     </button>
   </div>
 </div>
@@ -323,12 +322,12 @@ async function getRouteElevation(coordinates) {
 // MESSAGE DE BIENVENUE
 // ========================
 function showWelcomeMessage() {
-  welcomeMessage = L.control({position: 'center'});
+  welcomeMessage = L.control({position: 'topleft'});
   welcomeMessage.onAdd = function() {
     const div = L.DomUtil.create('div', 'welcome-message');
     div.innerHTML = `
-      <h2>hola</h2>
-      <p>welcome to hell</p>
+      <h2>🌍 Bienvenue !</h2>
+      <p>Sélectionnez un itinéraire ci-dessus pour commencer</p>
     `;
     return div;
   };
@@ -360,9 +359,9 @@ function toggleMarkers() {
   });
   
   if (markersVisible) {
-    toggleText.textContent = 'Masquer les points';
+    toggleText.textContent = '🙈 Masquer les points';
   } else {
-    toggleText.textContent = 'Afficher les points';
+    toggleText.textContent = '👁️ Afficher les points';
   }
 }
 
@@ -385,13 +384,13 @@ async function loadIndexFile() {
     const data = await response.json();
     availableCSVFiles = data.trips || data;
     
-    console.log(`Found ${availableCSVFiles.length} trips in index`);
+    console.log(`✅ Found ${availableCSVFiles.length} trips in index`);
     
     populateCSVSelector();
     showWelcomeMessage();
     
   } catch (error) {
-    console.error('Error loading index file:', error);
+    console.error('❌ Error loading index file:', error);
     select.innerHTML = `<option value="">Erreur: ${error.message}</option>`;
     loadBtn.disabled = true;
     
@@ -464,7 +463,7 @@ function clearMap() {
   
   const toggleText = document.getElementById('toggle-text');
   if (toggleText) {
-    toggleText.textContent = 'Masquer les points';
+    toggleText.textContent = '🙈 Masquer les points';
   }
 }
 
@@ -530,7 +529,7 @@ function extractKeywords(placeName) {
 // Ouais c'est relou, mais ça marche aussi
 // ========================
 async function getPlaceImage(placeName) {
-  console.log(`Searching Unsplash for: ${placeName}`);
+  console.log(`🔍 Searching Unsplash for: ${placeName}`);
   
   const cleanName = placeName
     .replace(/\s+(Brésil|Brazil|Colombie|Colombia|Argentina|Argentine|Pérou|Peru|Chile|Chili|Bolivie|Bolivia|Tadjikistan|Tajikistan|Australie|Australia)/gi, '')
@@ -596,11 +595,11 @@ function loadCSV(csvUrl) {
         const days = row["Jours sur place"] || row.Days || "N/A";
         
         if (isNaN(lat) || isNaN(lng)) {
-          console.warn(`Invalid coordinates for: ${name}`);
+          console.warn(`⚠️ Invalid coordinates for: ${name}`);
           return;
         }
         
-        console.log(`Adding marker ${idx + 1}: ${name}`);
+        console.log(`📍 Adding marker ${idx + 1}: ${name}`);
         const marker = L.marker([lat, lng]);
         
         allMarkers.push(marker);
@@ -613,14 +612,14 @@ function loadCSV(csvUrl) {
           <div class="popup-content">
             <strong>${name}</strong><br>
             ⏱ ${days} jour(s)<br>
-            <div class="loading-img">Recherche Unsplash...</div>
+            <div class="loading-img">🔍 Recherche Unsplash...</div>
           </div>
         `;
         
         marker.bindPopup(popupContent, { maxWidth: 350 });
         
         marker.on('popupopen', async function(e) {
-          console.log(`\nPopup opened for: ${name}`);
+          console.log(`\n👆 Popup opened for: ${name}`);
           const popup = e.popup;
           
           try {
@@ -636,8 +635,8 @@ function loadCSV(csvUrl) {
                   <img class="popup-img" 
                        src="${imageData.url}" 
                        alt="${name}"
-                       onload="console.log('Image loaded')"
-                       onerror="console.error('Image failed to load')">
+                       onload="console.log('✅ Image loaded')"
+                       onerror="console.error('❌ Image failed to load')">
                   ${creditHtml}
                 </div>
               `);
@@ -657,7 +656,7 @@ function loadCSV(csvUrl) {
             }
             
           } catch (error) {
-            console.error('Error:', error);
+            console.error('❌ Error:', error);
             popup.setContent(`
               <div class="popup-content">
                 <strong>${name}</strong><br>
@@ -674,16 +673,16 @@ function loadCSV(csvUrl) {
       
       if (bounds.length) {
         map.fitBounds(bounds);
-        console.log(`Map fitted to ${bounds.length} points`);
+        console.log(`🗺️ Map fitted to ${bounds.length} points`);
       }
       
       if (points.length > 1) {
-        console.log(`Drawing routes...\n`);
+        console.log(`🛣️ Drawing routes...\n`);
         drawRouteSegments(points);
       }
     },
     error: function(error) {
-      console.error('CSV load error:', error);
+      console.error('❌ CSV load error:', error);
       alert(`Erreur de chargement du CSV: ${error.message}`);
     }
   });
@@ -697,7 +696,7 @@ function drawRouteSegments(points) {
   
   function next() {
     if (i >= points.length - 1) {
-      console.log('All routes drawn\n');
+      console.log('✅ All routes drawn\n');
       return;
     }
     
@@ -729,8 +728,9 @@ function drawRouteSegments(points) {
       const route = e.routes[0];
       const distance = route.summary ? route.summary.totalDistance : 0;
       const coordinates = route.coordinates;
+      const segmentNumber = i + 1; // Capturer le numéro maintenant!
       
-      console.log(`  ✓ Route ${i+1}: ${(distance/1000).toFixed(1)}km`);
+      console.log(`  ✓ Route ${segmentNumber}: ${(distance/1000).toFixed(1)}km`);
       
       // Masquer la ligne par défaut du routing
       if (routing._line) {
@@ -750,20 +750,20 @@ function drawRouteSegments(points) {
       
       // Ajouter le handler de clic
       polyline.on("click", async (ev) => {
-        console.log(`🖱️ Route clicked: Segment ${i+1}`);
+        console.log(`🖱️ Route clicked: Segment ${segmentNumber}`);
         
         // Créer popup avec chargement
         const popup = L.popup()
           .setLatLng(ev.latlng)
           .setContent(`
             <div class="route-popup">
-              <strong>Segment ${i+1}</strong><br><br>
+              <strong>🚗 Segment ${segmentNumber}</strong><br><br>
               <div class="route-stat">
                 <span class="route-stat-label">📏 Distance:</span>
                 <span class="route-stat-value">${(distance / 1000).toFixed(1)} km</span>
               </div>
               <div class="route-stat">
-                <span class="route-stat-label">Altitude:</span>
+                <span class="route-stat-label">⛰️ Altitude:</span>
                 <span class="elevation-loading">Chargement...</span>
               </div>
             </div>
@@ -777,7 +777,7 @@ function drawRouteSegments(points) {
           if (elevation) {
             popup.setContent(`
               <div class="route-popup">
-                <strong>Segment ${i+1}</strong><br><br>
+                <strong>🚗 Segment ${segmentNumber}</strong><br><br>
                 <div class="route-stat">
                   <span class="route-stat-label">📏 Distance:</span>
                   <span class="route-stat-value">${(distance / 1000).toFixed(1)} km</span>
@@ -799,13 +799,13 @@ function drawRouteSegments(points) {
           } else {
             popup.setContent(`
               <div class="route-popup">
-                <strong>Segment ${i+1}</strong><br><br>
+                <strong>🚗 Segment ${segmentNumber}</strong><br><br>
                 <div class="route-stat">
                   <span class="route-stat-label">📏 Distance:</span>
                   <span class="route-stat-value">${(distance / 1000).toFixed(1)} km</span>
                 </div>
                 <div class="route-stat">
-                  <span class="route-stat-label">Altitude:</span>
+                  <span class="route-stat-label">⛰️ Altitude:</span>
                   <span style="color:#999;font-size:12px;">Non disponible</span>
                 </div>
               </div>
@@ -821,7 +821,7 @@ function drawRouteSegments(points) {
     });
     
     routing.on("routingerror", (e) => {
-      console.log(`  Route ${i+1}: No road`);
+      console.log(`  ⚠️ Route ${i+1}: No road`);
       
       const line = L.polyline([from, to], {
         color: "#e53935",
@@ -836,7 +836,7 @@ function drawRouteSegments(points) {
           .setLatLng(ev.latlng)
           .setContent(`
             <div class="route-popup">
-              <strong>Pas de route disponible</strong><br><br>
+              <strong>⚠️ Pas de route disponible</strong><br><br>
               <div class="route-stat">
                 <span class="route-stat-label">📏 Distance (vol d'oiseau):</span>
                 <span class="route-stat-value">${km.toFixed(1)} km</span>
@@ -859,7 +859,7 @@ function drawRouteSegments(points) {
 // ========================
 loadIndexFile();
 
-console.log('Travel Map initialized');
+console.log('✅ Travel Map initialized');
 </script>
 </body>
 </html>
