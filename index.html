@@ -323,7 +323,7 @@ async function getRouteElevation(coordinates) {
 // MESSAGE DE BIENVENUE
 // ========================
 function showWelcomeMessage() {
-  welcomeMessage = L.control({position: 'topleft'});
+  welcomeMessage = L.control({position: 'center'});
   welcomeMessage.onAdd = function() {
     const div = L.DomUtil.create('div', 'welcome-message');
     div.innerHTML = `
