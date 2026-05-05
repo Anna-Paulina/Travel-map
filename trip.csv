@@ -36,8 +36,8 @@ Latitude,Longitude,Lieu,Jours sur place
 -1.406,-78.425,Volcan Chimborazo Équateur,2
 -0.678,-80.093,Isla de la Plata Équateur,3
 -12.046,-77.042,Lima côte Pacifique falaises,2
--9.189,-75.015,Cordillère Blanche Pérou,5
 -14.087,-75.763,Huacachina désert d’Ica,2
+-9.189,-75.015,Cordillère Blanche Pérou,5
 -13.329,-72.197,Vallée Sacrée des Incas,4
 -13.163,-72.545,Machu Picchu Pérou,4
 -15.840,-70.021,Lac Titicaca Pérou Bolivie,4
@@ -49,20 +49,31 @@ Latitude,Longitude,Lieu,Jours sur place
 -26.246,-69.197,Parc Nevado Tres Cruces Chili,3
 -32.653,-70.011,Aconcagua Parc Argentine,4
 -32.890,-68.827,Mendoza vignobles Argentine,2
+-41.133,-71.310,Bariloche & lacs Argentine,5
+-42.880,-71.326,Parc Los Alerces Argentine,3
+-49.272,-72.985,El Chaltén Fitz Roy Argentine,3
+-50.942,-73.406,Glacier Perito Moreno Argentine,3
+-49.331,-72.886,Parc Torres del Paine Chili,6
+-54.801,-68.303,Ushuaïa Terre de Feu,4
 -27.126,-55.537,Missions Jésuites Argentine,2
 -25.695,-54.436,Chutes d’Iguazú,3
 -23.550,-46.633,São Paulo Brésil,3
 -22.951,-43.210,Rio de Janeiro panoramas,5
 -24.020,-46.462,Ilha do Cardoso Brésil,3
 -27.599,-48.549,Florianópolis plages sauvages,4
--34.603,-58.381,Buenos Aires Argentine,3
--41.133,-71.310,Bariloche & lacs Argentine,5
--42.880,-71.326,Parc Los Alerces Argentine,3
--49.331,-72.886,Parc Torres del Paine Chili,6
--50.942,-73.406,Glacier Perito Moreno Argentine,3
--49.272,-72.985,El Chaltén Fitz Roy Argentine,3
--54.801,-68.303,Ushuaïa Terre de Feu,4
--5.580,105.250,Krakatoa Indonésie,2
+-36.848,174.763,Auckland Nouvelle-Zélande,2
+-38.685,176.070,Rotorua volcans Nouvelle-Zélande,3
+-39.272,175.580,Parc Tongariro Nouvelle-Zélande,3
+-43.532,172.636,Christchurch Nouvelle-Zélande,2
+-44.673,167.925,Milford Sound Nouvelle-Zélande,3
+-45.031,168.662,Queenstown Nouvelle-Zélande,4
+-16.918,145.778,Daintree Rainforest Australie,4
+-18.287,147.699,Great Barrier Reef îles,5
+-20.282,148.699,Whitsundays Australie,2
+-25.344,131.036,Uluru Australie,3
+-33.868,151.209,Sydney falaises & océan,3
+-36.890,148.262,Parc Kosciuszko Australie,4
+-42.882,147.325,Tasmanie sauvage,6
 -8.340,115.092,Bali volcans & rizières,6
 -8.409,115.188,Lombok Mont Rinjani,4
 -8.561,119.484,Flores & Komodo,5
@@ -73,37 +84,32 @@ Latitude,Longitude,Lieu,Jours sur place
 4.210,118.616,Sabah Bornéo montagnes,4
 6.035,116.558,Mont Kinabalu Malaisie,4
 4.048,114.805,Mulu Caves National Park Malaisie,3
--16.918,145.778,Daintree Rainforest Australie,4
--18.287,147.699,Great Barrier Reef îles,5
--20.282,148.699,Whitsundays Australie,2
--25.344,131.036,Uluru Australie,3
--33.868,151.209,Sydney falaises & océan,3
--36.890,148.262,Parc Kosciuszko Australie,4
--42.882,147.325,Tasmanie sauvage,6
--36.848,174.763,Auckland Nouvelle-Zélande,2
--38.685,176.070,Rotorua volcans Nouvelle-Zélande,3
--39.272,175.580,Parc Tongariro Nouvelle-Zélande,3
--43.532,172.636,Christchurch Nouvelle-Zélande,2
--44.673,167.925,Milford Sound Nouvelle-Zélande,3
--45.031,168.662,Queenstown Nouvelle-Zélande,4
-43.825,87.616,Urumqi Xinjiang Chine,2
-42.950,89.189,Turpan désert & oasis Chine,2
-40.142,94.661,Dunhuang grottes de Mogao Chine,3
-37.872,112.549,Pingyao ville ancienne Chine,2
-34.385,109.273,Xi’an armée de terre cuite Chine,3
-36.061,103.834,Lanzhou Fleuve Jaune Chine,2
+-0.220,-78.512,Quito centre historique Équateur,2
+-1.406,-78.425,Volcan Chimborazo Équateur,2
+-0.678,-80.093,Isla de la Plata Équateur,3
+0.044,-77.345,Amazonie Colombienne Leticia,4
+1.248,-77.326,Santuario de Las Lajas Colombie,2
+6.244,-75.581,Guatapé & Piedra del Peñol Colombie,3
+6.251,-75.564,Medellín Colombie,2
+10.393,-75.514,Parc Tayrona Cabo San Juan,2
+11.307,-74.204,Parc National Tayrona Colombie,4
+10.423,-75.551,Cartagena de Indias Colombie,3
 31.230,121.473,Shanghai mégapole Chine,3
 29.563,106.551,Chongqing montagnes urbaines Chine,2
 30.658,104.064,Chengdu pandas & Sichuan,3
 30.997,103.672,Mont Qingcheng Chine,3
 28.178,102.259,Région du Yunnan Nord (Shangri-La),4
 25.038,102.718,Kunming Yunnan Chine,2
-27.988,86.925,Himalaya Népal Everest View,5
-28.209,83.985,Pokhara Népal,2
-41.204,74.766,Tian Shan Kirghizistan,6
-42.491,78.395,Lac Issyk-Kul Kirghizistan,4
-38.576,68.779,Pamir Tadjikistan,5
+34.385,109.273,Xi’an armée de terre cuite Chine,3
+36.061,103.834,Lanzhou Fleuve Jaune Chine,2
+37.872,112.549,Pingyao ville ancienne Chine,2
+40.142,94.661,Dunhuang grottes de Mogao Chine,3
+42.950,89.189,Turpan désert & oasis Chine,2
+43.825,87.616,Urumqi Xinjiang Chine,2
 39.654,66.959,Samarkand Ouzbékistan,3
+38.576,68.779,Pamir Tadjikistan,5
+42.491,78.395,Lac Issyk-Kul Kirghizistan,4
+41.204,74.766,Tian Shan Kirghizistan,6
 37.960,58.326,Désert du Karakoum Turkménistan,3
 38.963,35.243,Cappadoce Turquie,4
 41.008,28.978,Bosphore panoramas Istanbul,2
