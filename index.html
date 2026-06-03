@@ -617,30 +617,62 @@ function loadCSV(csvUrl) {
 // NOUVELLE FONCTION: APPEL DIRECT À OSRM
 // ========================
 async function fetchRoute(from, to, segmentNumber) {
-  const url = `https://router.project-osrm.org/route/v1/driving/${from[1]},${from[0]};${to[1]},${to[0]}?overview=full`;
+  const url = `https://router.project-osrm.org/route/v1/driving/${from[1]},${from[0]};${to[1]},${to[0]}?overview=full&geometries=geojson`;
   
   console.log(`  📡 Fetching route ${segmentNumber}...`);
   
   try {
     const response = await fetch(url);
-    const data = await response.json();
     
-    if (data.routes && data.routes.length > 0) {
-      const route = data.routes[0];
-      const distance = route.distance;
-      
-      // Convertir les coordonnées OSRM en Leaflet [lat, lng]
-      const coordinates = route.geometry.coordinates.map(c => [c[1], c[0]]);
-      
-      console.log(`  ✓ Route ${segmentNumber}: ${(distance/1000).toFixed(1)}km`);
-      
-      return { success: true, distance, coordinates };
-    } else {
-      console.log(`  ⚠️ Route ${segmentNumber}: No road found`);
+    if (!response.ok) {
+      console.log(`  ⚠️ Route ${segmentNumber}: HTTP ${response.status}`);
       return { success: false };
     }
+    
+    const data = await response.json();
+    
+    console.log(`  📊 API Response:`, {
+      code: data.code,
+      routesCount: data.routes ? data.routes.length : 0,
+      hasGeometry: data.routes && data.routes[0] && data.routes[0].geometry
+    });
+    
+    if (data.code !== 'Ok') {
+      console.log(`  ⚠️ Route ${segmentNumber}: API code = ${data.code}`);
+      return { success: false };
+    }
+    
+    if (!data.routes || data.routes.length === 0) {
+      console.log(`  ⚠️ Route ${segmentNumber}: No routes in response`);
+      return { success: false };
+    }
+    
+    const route = data.routes[0];
+    
+    if (!route.geometry) {
+      console.log(`  ⚠️ Route ${segmentNumber}: No geometry in route`);
+      return { success: false };
+    }
+    
+    const distance = route.distance;
+    
+    // Convertir les coordonnées OSRM en Leaflet [lat, lng]
+    // GeoJSON format: [lng, lat]
+    let coordinates;
+    if (route.geometry.type === 'LineString') {
+      coordinates = route.geometry.coordinates.map(c => [c[1], c[0]]);
+    } else if (Array.isArray(route.geometry.coordinates[0])) {
+      coordinates = route.geometry.coordinates.map(c => [c[1], c[0]]);
+    } else {
+      console.log(`  ⚠️ Route ${segmentNumber}: Unknown geometry format`);
+      return { success: false };
+    }
+    
+    console.log(`  ✓ Route ${segmentNumber}: ${(distance/1000).toFixed(1)}km, ${coordinates.length} points`);
+    
+    return { success: true, distance, coordinates };
   } catch (error) {
-    console.error(`  ❌ Route ${segmentNumber} error:`, error);
+    console.error(`  ❌ Route ${segmentNumber} error:`, error.message);
     return { success: false };
   }
 }
