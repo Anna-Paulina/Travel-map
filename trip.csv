@@ -6,6 +6,7 @@ Latitude,Longitude,Lieu,Jours sur place
 24.0277,-104.6532,Durango (Durango),2
 23.6345,-103.6440,Zacatecas (Zacatecas),3
 21.8853,-102.2916,Aguascalientes,1
+22.1516,-100.9764,San Luis Potosi,1
 20.5888,-100.3899,Santiago de Queretaro,2
 19.4326,-99.1332,Mexico City,4
 
@@ -49,7 +50,8 @@ Latitude,Longitude,Lieu,Jours sur place
 -14.087,-75.763,Huacachina désert d’Ica,2
 -9.189,-75.015,Cordillère Blanche Pérou,5
 -13.329,-72.197,Vallée Sacrée des Incas,4
--13.163,-72.545,Machu Picchu Pérou,4
+-13.163,-72.545,Machu Picchu Pérou,
+-11.4192,-75.7164,Caraz,8
 
 -15.840,-70.021,Lac Titicaca Pérou Bolivie,4
 -16.166,-69.083,Île du Soleil Bolivie,3
