@@ -534,6 +534,7 @@ function loadCSV(csvUrl) {
         const lng = parseFloat(row.Longitude);
         const name = row.Lieu || row.Place || "Unknown";
         const days = row["Jours sur place"] || row.Days || "N/A";
+        const bestPeriod = row["Best Period"] || "N/A";
         
         if (isNaN(lat) || isNaN(lng)) {
           console.warn(`⚠️ Invalid coordinates for: ${name}`);
@@ -553,6 +554,7 @@ function loadCSV(csvUrl) {
           <div class="popup-content">
             <strong>${name}</strong><br>
             ⏱ ${days} jour(s)<br>
+            🗓️ Best period: ${bestPeriod}<br>
             <div class="loading-img">🔍 Recherche Unsplash...</div>
           </div>
         `, { maxWidth: 350 });
@@ -570,6 +572,7 @@ function loadCSV(csvUrl) {
                 <div class="popup-content">
                   <strong>${name}</strong><br>
                   ⏱ ${days} jour(s)<br>
+                  🗓️ Best period: ${bestPeriod}<br>
                   <img class="popup-img" src="${imageData.url}" alt="${name}">
                   ${creditHtml}
                 </div>
@@ -579,6 +582,7 @@ function loadCSV(csvUrl) {
                 <div class="popup-content">
                   <strong>${name}</strong><br>
                   ⏱ ${days} jour(s)<br>
+                  🗓️ Best period: ${bestPeriod}<br>
                   <div class="no-image">
                     <div>
                       <div style="font-size:40px;margin-bottom:10px;">📍</div>
