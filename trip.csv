@@ -1,82 +1,82 @@
 Latitude,Longitude,Lieu,Jours sur place
-29.976,-90.078224,La-Nouvelle-Orlean,2
+29.976,-90.078224,La-Nouvelle-Orlean,2,Oct,10
 
-25.4267,-100.9954,Saltillo (Coahuila),2
-26.9069,-101.4206,Cuatro Cienegas (Coahuila),2
-24.0277,-104.6532,Durango (Durango),2
-23.6345,-103.6440,Zacatecas (Zacatecas),3
-21.8853,-102.2916,Aguascalientes,1
-22.1516,-100.9764,San Luis Potosi,1
-20.5888,-100.3899,Santiago de Queretaro,2
-19.4326,-99.1332,Mexico City,4
+25.4267,-100.9954,Saltillo (Coahuila),2,Oct,10
+26.9069,-101.4206,Cuatro Cienegas (Coahuila),2,Oct,10
+24.0277,-104.6532,Durango (Durango),2,Nov,11
+23.6345,-103.6440,Zacatecas (Zacatecas),3,Nov,11
+21.8853,-102.2916,Aguascalientes,1,Nov,11
+22.1516,-100.9764,San Luis Potosi,1,Nov,11
+20.5888,-100.3899,Santiago de Queretaro,2,Dec,12
+19.4326,-99.1332,Mexico City,4,Dec,12
 
-17.0732,-96.7266,Oaxaca,3
-16.7369,-92.6376,San Cristobal de las Casas,3
+17.0732,-96.7266,Oaxaca,3,Dec,12
+16.7369,-92.6376,San Cristobal de las Casas,3,Dec,12
 
-14.6349,-90.5069,Guatemala City,1
-14.5586,-90.7340,Antigua Guatemala,3
-14.8333,-91.5167,Lake Atitlan,3
+14.6349,-90.5069,Guatemala City,1,Jan,01
+14.5586,-90.7340,Antigua Guatemala,3,Jan,01
+14.8333,-91.5167,Lake Atitlan,3,Feb,02
 
-13.6929,-89.2182,San Salvador,1
-13.7942,-88.8965,Suchitoto,2
+13.6929,-89.2182,San Salvador,1,Feb,02
+13.7942,-88.8965,Suchitoto,2,Feb,02
 
-12.1364,-86.2514,Managua,1
-11.9344,-85.9560,Granada Nicaragua,3
-11.2524,-85.8700,Ometepe Island,3
+12.1364,-86.2514,Managua,1,Feb,02
+11.9344,-85.9560,Granada Nicaragua,3,Feb,02
+11.2524,-85.8700,Ometepe Island,3,Mar,03
 
-10.6329,-85.4377,Liberia Costa Rica,1
-10.3000,-85.8400,Tamarindo,2
-9.7489,-83.7534,San Jose Costa Rica,1
-9.3922,-84.1340,Manuel Antonio,3
-9.4333,-84.1333,Quepos,1
+10.6329,-85.4377,Liberia Costa Rica,1,Mar,03
+10.3000,-85.8400,Tamarindo,2,Mar,03
+9.7489,-83.7534,San Jose Costa Rica,1,Mar,03
+9.3922,-84.1340,Manuel Antonio,3,Mar,03
+9.4333,-84.1333,Quepos,1,Mar,03
 
-9.1650,-79.8390,Panama City,3
-9.3122,-78.9500,Puerto Carti,2
+9.1650,-79.8390,Panama City,3,Mar,03
+9.3122,-78.9500,Puerto Carti,2,Apr,04
 
-8.89226,-76.354925,Los Cordobas,1
-10.393,-75.514,Parc Tayrona Cabo San Juan,2
-11.307,-74.204,Parc National Tayrona Colombie,4
-10.423,-75.551,Cartagena de Indias Colombie,3
-6.251,-75.564,Medellín Colombie,2
-6.244,-75.581,Guatapé & Piedra del Peñol Colombie,3
-1.248,-77.326,Santuario de Las Lajas Colombie,2
-0.044,-77.345,Amazonie Colombienne Leticia,4
+8.89226,-76.354925,Los Cordobas,1,Apr,04
+10.393,-75.514,Parc Tayrona Cabo San Juan,2,Apr,04
+11.307,-74.204,Parc National Tayrona Colombie,4,May,05
+10.423,-75.551,Cartagena de Indias Colombie,3,May,05
+6.251,-75.564,Medellín Colombie,2,May,05
+6.244,-75.581,Guatapé & Piedra del Peñol Colombie,3,May,05
+1.248,-77.326,Santuario de Las Lajas Colombie,2,Jun,06
+0.044,-77.345,Amazonie Colombienne Leticia,4,Jun,06
 
--0.220,-78.512,Quito centre historique Équateur,2
--1.406,-78.425,Volcan Chimborazo Équateur,2
--0.678,-80.093,Isla de la Plata Équateur,3
+-0.220,-78.512,Quito centre historique Équateur,2,Jun,06
+-1.406,-78.425,Volcan Chimborazo Équateur,2,Jul,07
+-0.678,-80.093,Isla de la Plata Équateur,3,Jul,07
 
--12.046,-77.042,Lima côte Pacifique falaises,2
--14.087,-75.763,Huacachina désert d’Ica,2
--9.189,-75.015,Cordillère Blanche Pérou,5
--13.329,-72.197,Vallée Sacrée des Incas,4
--13.163,-72.545,Machu Picchu Pérou,
--11.4192,-75.7164,Caraz,8
+-12.046,-77.042,Lima côte Pacifique falaises,2,Jul,07
+-14.087,-75.763,Huacachina désert d’Ica,2,Jul,07
+-9.189,-75.015,Cordillère Blanche Pérou,5,Aug,08
+-13.329,-72.197,Vallée Sacrée des Incas,4,Aug,08
+-13.163,-72.545,Machu Picchu Pérou,3,Aug,08
+-11.4192,-75.7164,Caraz,8,Aug,08
 
--15.840,-70.021,Lac Titicaca Pérou Bolivie,4
--16.166,-69.083,Île du Soleil Bolivie,3
--16.489,-68.119,La Paz Bolivie,2
--20.133,-67.489,Salar de Uyuni Bolivie,4
--21.946,-68.230,Lagunes Altiplano Bolivie,3
+-15.840,-70.021,Lac Titicaca Pérou Bolivie,4,Sep,09
+-16.166,-69.083,Île du Soleil Bolivie,3,Sep,09
+-16.489,-68.119,La Paz Bolivie,2,Sep,09
+-20.133,-67.489,Salar de Uyuni Bolivie,4,Sep,09
+-21.946,-68.230,Lagunes Altiplano Bolivie,3,Sep,09
 
--23.652,-67.990,Désert d’Atacama Chili,5
--26.246,-69.197,Parc Nevado Tres Cruces Chili,3
+-23.652,-67.990,Désert d’Atacama Chili,5,Oct,10
+-26.246,-69.197,Parc Nevado Tres Cruces Chili,3,Oct,October
 
--32.653,-70.011,Aconcagua Parc Argentine,4
--32.890,-68.827,Mendoza vignobles Argentine,2
--41.133,-71.310,Bariloche & lacs Argentine,5
--42.880,-71.326,Parc Los Alerces Argentine,3
--49.272,-72.985,El Chaltén Fitz Roy Argentine,3
--50.942,-73.406,Glacier Perito Moreno Argentine,3
--49.331,-72.886,Parc Torres del Paine Chili,6
--54.801,-68.303,Ushuaïa Terre de Feu,4
+-32.653,-70.011,Aconcagua Parc Argentine,4,Oct,October
+-32.890,-68.827,Mendoza vignobles Argentine,2,Nov,November
+-41.133,-71.310,Bariloche & lacs Argentine,5,Nov,November
+-42.880,-71.326,Parc Los Alerces Argentine,3,Nov,November
+-49.272,-72.985,El Chaltén Fitz Roy Argentine,3,Dec,December
+-50.942,-73.406,Glacier Perito Moreno Argentine,3,Dec,December
+-49.331,-72.886,Parc Torres del Paine Chili,6,Dec,December
+-54.801,-68.303,Ushuaïa Terre de Feu,4,Dec,December
 
--27.126,-55.537,Missions Jésuites Argentine,2
--25.695,-54.436,Chutes d’Iguazú,3
--23.550,-46.633,São Paulo Brésil,3
--22.951,-43.210,Rio de Janeiro panoramas,5
--24.020,-46.462,Ilha do Cardoso Brésil,3
--27.599,-48.549,Florianópolis plages sauvages,4
+-27.126,-55.537,Missions Jésuites Argentine,2,Nov,November
+-25.695,-54.436,Chutes d’Iguazú,3,Oct,October
+-23.550,-46.633,São Paulo Brésil,3,Oct,October
+-22.951,-43.210,Rio de Janeiro panoramas,5,Nov,November
+-24.020,-46.462,Ilha do Cardoso Brésil,3,Nov,November
+-27.599,-48.549,Florianópolis plages sauvages,4,Dec,December
 
 -36.848,174.763,Auckland Nouvelle-Zélande,2
 -38.685,176.070,Rotorua volcans Nouvelle-Zélande,3
