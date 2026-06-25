@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!-- 
-  Travel Map v2 - Refactored routing
-  Appel direct à OSRM sans dépendre de Leaflet Routing Machine pour le rendu
+  Travel Map v3 - With Best Period Display
+  Affiche la meilleure période pour visiter chaque lieu
 -->
 <html lang="en">
 <head>
@@ -106,6 +106,19 @@ body {
 }
 .popup-content {
   min-width: 250px;
+}
+.best-period {
+  background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-top: 8px;
+  font-weight: 600;
+  text-align: center;
+  font-size: 14px;
+}
+.best-period-icon {
+  margin-right: 6px;
 }
 .loading-img {
   width: 100%;
@@ -315,7 +328,7 @@ function showWelcomeMessage() {
   welcomeMessage.onAdd = function() {
     const div = L.DomUtil.create('div', 'welcome-message');
     div.innerHTML = `
-      <h2> Bienvenue noble voyageur!</h2>
+      <h2>🌍 Bienvenue noble voyageur!</h2>
       <p>Sélectionne un itinéraire ci-dessus à droite</p>
     `;
     return div;
@@ -535,12 +548,15 @@ function loadCSV(csvUrl) {
         const name = row.Lieu || row.Place || "Unknown";
         const days = row["Jours sur place"] || row.Days || "N/A";
         
+        // ✨ NEW: Lire la colonne "Best Period" (colonne 5 du CSV)
+        const bestPeriod = row["Best Period"] || row["Meilleure période"] || "N/A";
+        
         if (isNaN(lat) || isNaN(lng)) {
           console.warn(`⚠️ Invalid coordinates for: ${name}`);
           return;
         }
         
-        console.log(`📍 Adding marker ${idx + 1}: ${name}`);
+        console.log(`📍 Adding marker ${idx + 1}: ${name} (Best: ${bestPeriod})`);
         const marker = L.marker([lat, lng]);
         
         allMarkers.push(marker);
@@ -549,10 +565,14 @@ function loadCSV(csvUrl) {
           marker.addTo(map);
         }
         
+        // ✨ NEW: Afficher Best Period dans le popup initial
         marker.bindPopup(`
           <div class="popup-content">
             <strong>${name}</strong><br>
             ⏱ ${days} jour(s)<br>
+            <div class="best-period">
+              <span class="best-period-icon">🗓️</span>Best: ${bestPeriod}
+            </div>
             <div class="loading-img">🔍 Recherche Unsplash...</div>
           </div>
         `, { maxWidth: 350 });
@@ -563,6 +583,7 @@ function loadCSV(csvUrl) {
           try {
             const imageData = await getPlaceImage(name);
             
+            // ✨ NEW: Inclure Best Period dans le popup final
             if (imageData.found) {
               const creditHtml = `<a href="${imageData.creditUrl}" target="_blank" class="img-credit">${imageData.credit}</a>`;
               
@@ -570,6 +591,9 @@ function loadCSV(csvUrl) {
                 <div class="popup-content">
                   <strong>${name}</strong><br>
                   ⏱ ${days} jour(s)<br>
+                  <div class="best-period">
+                    <span class="best-period-icon">🗓️</span>Best: ${bestPeriod}
+                  </div>
                   <img class="popup-img" src="${imageData.url}" alt="${name}">
                   ${creditHtml}
                 </div>
@@ -579,6 +603,9 @@ function loadCSV(csvUrl) {
                 <div class="popup-content">
                   <strong>${name}</strong><br>
                   ⏱ ${days} jour(s)<br>
+                  <div class="best-period">
+                    <span class="best-period-icon">🗓️</span>Best: ${bestPeriod}
+                  </div>
                   <div class="no-image">
                     <div>
                       <div style="font-size:40px;margin-bottom:10px;">📍</div>
@@ -617,7 +644,6 @@ function loadCSV(csvUrl) {
 // FETCH ROUTE - SIMPLIFIED VERSION
 // ========================
 async function fetchRoute(from, to, segmentNumber) {
-  // URL OSRM - on ajoute geometries=geojson
   const url = `https://router.project-osrm.org/route/v1/driving/${from[1]},${from[0]};${to[1]},${to[0]}?overview=full&geometries=geojson`;
   
   console.log(`  📡 Fetching route ${segmentNumber}...`);
@@ -626,18 +652,14 @@ async function fetchRoute(from, to, segmentNumber) {
     const response = await fetch(url);
     const data = await response.json();
     
-    // Log la réponse complète pour debug
     console.log(`  📊 OSRM Response:`, { code: data.code, routes: data.routes?.length || 0 });
     
-    // Vérifier les conditions pour une route valide
     if (data.code === 'Ok' && data.routes && data.routes.length > 0) {
       const route = data.routes[0];
       
-      // Essayer d'extraire les coordonnées
       try {
         let coordinates = [];
         
-        // Format GeoJSON: [lng, lat]
         if (route.geometry && route.geometry.coordinates) {
           coordinates = route.geometry.coordinates.map(coord => [coord[1], coord[0]]);
         }
@@ -657,7 +679,6 @@ async function fetchRoute(from, to, segmentNumber) {
       console.log(`  ⚠️ Route ${segmentNumber}: Code=${data.code}, Routes=${data.routes?.length || 0}`);
     }
     
-    // Fallback: retourner "pas de route trouvée"
     return { success: false };
     
   } catch (error) {
@@ -675,7 +696,6 @@ async function drawRoutes(points) {
     const result = await fetchRoute(from, to, segmentNumber);
     
     if (result.success) {
-      // Créer polyline cliquable
       const polyline = L.polyline(result.coordinates, {
         color: '#667eea',
         weight: 5,
@@ -684,7 +704,6 @@ async function drawRoutes(points) {
       
       currentPolylines.push(polyline);
       
-      // Ajouter handler de clic
       const distance = result.distance;
       const coordinates = result.coordinates;
       
@@ -740,7 +759,6 @@ async function drawRoutes(points) {
         }
       });
     } else {
-      // Fallback: ligne directe
       const line = L.polyline([from, to], {
         color: "#e53935",
         weight: 4,
@@ -750,7 +768,7 @@ async function drawRoutes(points) {
       
       currentPolylines.push(line);
       
-      const km = Math.sqrt(Math.pow(to[0]-from[0], 2) + Math.pow(to[1]-from[1], 2)) * 111; // Approximation
+      const km = Math.sqrt(Math.pow(to[0]-from[0], 2) + Math.pow(to[1]-from[1], 2)) * 111;
       
       line.on('click', (e) => {
         L.popup()
@@ -768,7 +786,6 @@ async function drawRoutes(points) {
       });
     }
     
-    // Délai pour respecter les rate limits
     await new Promise(resolve => setTimeout(resolve, 2000));
   }
   
