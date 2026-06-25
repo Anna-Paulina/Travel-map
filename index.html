@@ -311,12 +311,12 @@ async function getRouteElevation(coordinates) {
 // MESSAGE DE BIENVENUE
 // ========================
 function showWelcomeMessage() {
-  welcomeMessage = L.control({position: 'topleft'});
+  welcomeMessage = L.control({position: 'center'});
   welcomeMessage.onAdd = function() {
     const div = L.DomUtil.create('div', 'welcome-message');
     div.innerHTML = `
-      <h2>🌍 Bienvenue !</h2>
-      <p>Sélectionnez un itinéraire ci-dessus pour commencer</p>
+      <h2> Bienvenue noble voyageur!</h2>
+      <p>Sélectionne un itinéraire ci-dessus à droite</p>
     `;
     return div;
   };
