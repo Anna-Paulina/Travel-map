@@ -11,7 +11,7 @@ const CONFIG = {
   
   // GitHub Repository URL (raw files)
   // Format: https://raw.githubusercontent.com/USERNAME/REPO/BRANCH/
-  GITHUB_REPO_URL: "https://cdn.jsdelivr.net/gh/Anna-Paulina/Travel-map@main/',
+  GITHUB_REPO_URL: 'https://cdn.jsdelivr.net/gh/Anna-Paulina/Travel-map@main/',
   
   // Nom du fichier index des voyages
   INDEX_FILE: 'trips-index.json',
