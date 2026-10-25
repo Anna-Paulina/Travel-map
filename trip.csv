@@ -1,10 +1,10 @@
 Latitude,Longitude,Lieu,Jours sur place,Best Period,num mois
 29.976,-90.078224,La-Nouvelle-Orlean,2,Oct,10
 
-25.4267,-100.9954,Saltillo (Coahuila),2,Oct,10
-26.9069,-101.4206,Cuatro Cienegas (Coahuila),2,Oct,10
-24.0277,-104.6532,Durango (Durango),2,Nov,11
-23.6345,-103.6440,Zacatecas (Zacatecas),3,Nov,11
+25.4267,-100.9954,Saltillo,2,Oct,10
+26.9069,-101.4206,Cuatro Cienegas,2,Oct,10
+24.0277,-104.6532,Durango,2,Nov,11
+23.6345,-103.6440,Zacatecas,3,Nov,11
 21.8853,-102.2916,Aguascalientes,1,Nov,11
 22.1516,-100.9764,San Luis Potosi,1,Nov,11
 20.5888,-100.3899,Santiago de Queretaro,2,Dec,12
@@ -15,14 +15,14 @@ Latitude,Longitude,Lieu,Jours sur place,Best Period,num mois
 
 14.6349,-90.5069,Guatemala City,1,Jan,01
 14.5586,-90.7340,Antigua Guatemala,3,Jan,01
-14.8333,-91.5167,Lake Atitlan,3,Feb,02
+14.8333,-91.5167,Atitlan,3,Feb,02
 
 13.6929,-89.2182,San Salvador,1,Feb,02
 13.7942,-88.8965,Suchitoto,2,Feb,02
 
 12.1364,-86.2514,Managua,1,Feb,02
 11.9344,-85.9560,Granada Nicaragua,3,Feb,02
-11.2524,-85.8700,Ometepe Island,3,Mar,03
+11.2524,-85.8700,Ometepe,3,Mar,03
 
 10.6329,-85.4377,Liberia Costa Rica,1,Mar,03
 10.3000,-85.8400,Tamarindo,2,Mar,03
@@ -35,11 +35,11 @@ Latitude,Longitude,Lieu,Jours sur place,Best Period,num mois
 
 8.89226,-76.354925,Los Cordobas,1,Apr,04
 10.393,-75.514,Parc Tayrona Cabo San Juan,2,Apr,04
-11.307,-74.204,Parc National Tayrona Colombie,4,May,05
-10.423,-75.551,Cartagena de Indias Colombie,3,May,05
-6.251,-75.564,Medellín Colombie,2,May,05
+11.307,-74.204,Tayrona Colombia,4,May,05
+10.423,-75.551,Cartagena de Indias Colombia,3,May,05
+6.251,-75.564,Medellín,2,May,05
 6.244,-75.581,Guatapé & Piedra del Peñol Colombie,3,May,05
-3.807,-75.162,Tatacoa Desert Colombie,2,May,05
+3.807,-75.162,Tatacoa Colombia,2,May,05
 5.638,-75.570,Salento Colombie,3,May,05
 4.638,-75.882,Vallée de Cocora Colombie,2,May,05
 5.600,-75.820,Jardín Colombie,2,May,05
