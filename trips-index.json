@@ -24,6 +24,11 @@
       "name": "🍁Ontario",
       "file": "OntarioTrip.csv",
       "description": "nice places all over ontario"
+    },
+    {
+      "name": "Peru",
+      "file": "Peru.csv",
+      "description": "nice places all over Peru"
     }
   ]
 }
